@@ -1,9 +1,6 @@
-// ===========================================
-// ФЕНИКС-ПОИСК v3.0 - ЖИВОЙ ДИАЛОГ
-// ===========================================
-
+// app.js - Феникс-Поиск v3.1 с коллективной мудростью
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔥 ФЕНИКС-ПОИСК: Живой диалог активирован');
+    console.log('🔥 Феникс-Поиск: Живой диалог с коллективным разумом');
     
     // ЭЛЕМЕНТЫ ИНТЕРФЕЙСА
     const searchInput = document.getElementById('searchInput');
@@ -21,69 +18,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // ОСНОВНЫЕ ФУНКЦИИ
     // ====================
     
-// 1. ВЫПОЛНЕНИЕ ПОИСКА - ОБНОВЛЁННАЯ ВЕРСИЯ
-async function performSearch(query) {
-    console.log('🔍 Поиск запущен:', query);
-    
-    if (!query || query.trim().length < 2) {
-        showError('Задай вопрос хотя бы из 2-х символов... даже "я?" уже начало пути');
-        return;
-    }
-    
-    // Показываем состояние загрузки
-    showLoading(query);
-    
-    try {
-        // Имитируем "глубокий поиск" (можно настроить время)
-        await new Promise(resolve => setTimeout(resolve, 1200));
+    // 1. ВЫПОЛНЕНИЕ ПОИСКА
+    async function performSearch(query) {
+        console.log('🔍 Поиск запущен:', query);
         
-        // Получаем ответ от ИИ
-        const response = await phoenix.search(query);
-        
-        console.log('✅ Ответ получен:', response);
-        
-        // Проверяем, что ответ имеет правильную структуру
-        if (!response || typeof response !== 'object') {
-            throw new Error('Некорректный формат ответа');
+        if (!query || query.trim().length < 2) {
+            showError('Задай вопрос хотя бы из 2-х символов... даже "я?" уже начало пути');
+            return;
         }
         
-        // Гарантируем наличие обязательных полей
-        const safeResponse = {
-            essence: response.essence || 'Ответ находится между строк твоего вопроса...',
-            resonance: response.resonance || 'Как этот вопрос отзывается в твоей глубине?',
-            step: response.step || 'Сделай паузу на 3 дыхания и прислушайся к тишине.',
-            type: response.type || 'исследование'
-        };
+        // Показываем состояние загрузки
+        showLoading(query);
         
-        // Показываем результат с небольшой задержкой для плавности
-        setTimeout(() => {
-            showResponse(query, safeResponse);
+        try {
+            // Имитируем "глубокий поиск"
+            await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 800));
+            
+            // Получаем ответ от ИИ
+            const response = await phoenix.search(query);
+            
+            console.log('✅ Ответ получен, коллективные данные:', response.collective);
+            
+            // Показываем результат
+            showResponse(query, response);
             
             // Сохраняем в историю
-            saveToHistory(query, safeResponse);
+            saveToHistory(query, response);
             
             // Генерируем следующий вопрос для углубления
             setTimeout(() => {
-                suggestNextQuestion(query, safeResponse);
-            }, 800);
-        }, 300);
-        
-    } catch (error) {
-        console.error('❌ Ошибка поиска:', error);
-        
-        // Резервный ответ на случай ошибки
-        const fallbackResponse = {
-            essence: `Даже когда путь кажется закрытым, поиск продолжается внутри. Твой вопрос "${query}" уже меняет тебя.`,
-            resonance: "Что чувствуется, когда ты отпускаешь потребность в немедленном ответе?",
-            step: "Перерыв на чай: приготовь чашку чая и просто наблюдай за паром 5 минут.",
-            type: "резервный"
-        };
-        
-        setTimeout(() => {
-            showResponse(query, fallbackResponse);
-        }, 500);
+                suggestNextQuestion(query, response);
+            }, 1000);
+            
+        } catch (error) {
+            console.error('Ошибка поиска:', error);
+            showError(`Путь временно закрыт: ${error.message}. Попробуй перефразировать вопрос.`);
+        }
     }
-}
     
     // 2. ПОКАЗ ЗАГРУЗКИ
     function showLoading(query) {
@@ -98,10 +69,11 @@ async function performSearch(query) {
                     <div class="phoenix-center">🦅</div>
                 </div>
                 <h3>ПОГРУЖАЕМСЯ В ГЛУБИНУ</h3>
-                <p class="query-in-process">"${query}"</p>
+                <p class="query-in-process">"${escapeHtml(query)}"</p>
                 <div class="search-steps">
                     <div class="step active">Анализирую суть...</div>
                     <div class="step">Ищу резонансные паттерны...</div>
+                    <div class="step">Связываюсь с коллективным разумом...</div>
                     <div class="step">Формулирую практику...</div>
                 </div>
                 <p class="loading-hint">Истинные ответы приходят не сразу — они зреют в тишине.</p>
@@ -112,132 +84,132 @@ async function performSearch(query) {
         animateSearchSteps();
     }
     
-// 3. ПОКАЗ ОТВЕТА - ИСПРАВЛЕННАЯ ВЕРСИЯ
-function showResponse(query, response) {
-    console.log('🦅 Показываю ответ:', { query, response });
-    
-    const timestamp = new Date().toLocaleTimeString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-    
-    // ОЧЕНЬ ВАЖНО: Убедись, что responseContainer есть и видим
-    if (!responseContainer) {
-        console.error('❌ responseContainer не найден!');
-        responseContainer = document.getElementById('responseContainer');
-        if (!responseContainer) {
-            // Создаём контейнер, если его нет (экстренный фикс)
-            responseContainer = document.createElement('div');
-            responseContainer.id = 'responseContainer';
-            resultSection.appendChild(responseContainer);
-        }
-    }
-    
-    // Гарантируем видимость
-    responseContainer.style.cssText = `
-        display: block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        position: relative !important;
-        z-index: 100 !important;
-    `;
-    
-    // Очищаем и показываем
-    responseContainer.innerHTML = '';
-    
-    const responseHTML = `
-        <div class="response-view" style="opacity: 0; transform: translateY(10px);">
-            <div class="response-header">
-                <span class="response-type ${response.type}">
-                    ${getTypeIcon(response.type)} ${response.type ? response.type.toUpperCase() : 'ОТВЕТ'}
-                </span>
-                <span class="response-time">🕊️ ${timestamp}</span>
+    // 3. ПОКАЗ ОТВЕТА (С КОЛЛЕКТИВНОЙ МУДРОСТЬЮ)
+    function showResponse(query, response) {
+        const timestamp = new Date().toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        // HTML для коллективной мудрости
+        const collectiveHTML = response.collective && response.collective.peopleCount > 0 ? `
+            <div class="collective-wisdom">
+                <div class="collective-header">
+                    <span class="collective-icon">🌍</span>
+                    <h4>КОЛЛЕКТИВНЫЙ РАЗУМ</h4>
+                </div>
+                <div class="collective-content">
+                    <p class="collective-stats">
+                        <span class="people-count">${response.collective.peopleCount}+</span> 
+                        человек искали ответ на похожий вопрос
+                    </p>
+                    ${response.collective.message ? 
+                        `<p class="collective-message">${response.collective.message}</p>` : ''}
+                    ${response.collective.similarQuestions && response.collective.similarQuestions.length > 0 ? `
+                        <div class="similar-questions">
+                            <p>Похожие вопросы других искателей:</p>
+                            <ul>
+                                ${response.collective.similarQuestions.map(q => 
+                                    `<li title="${escapeHtml(q.query)}">${escapeHtml(q.query.substring(0, 60))}...</li>`
+                                ).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                </div>
             </div>
-            
-            <div class="original-query">
-                <div class="query-icon">🎯</div>
-                <div class="query-text">${escapeHtml(query)}</div>
-            </div>
-            
-            <div class="response-sections">
-                <div class="section essence-section">
-                    <div class="section-header">
-                        <span class="section-icon">🦅</span>
-                        <h4>СУТЬ</h4>
-                    </div>
-                    <div class="section-content">
-                        <p>${escapeHtml(response.essence || 'Ответ формируется...')}</p>
-                    </div>
+        ` : '';
+        
+        responseContainer.innerHTML = `
+            <div class="response-view">
+                <div class="response-header">
+                    <span class="response-type ${response.type}">${getTypeIcon(response.type)} ${response.type ? response.type.toUpperCase() : 'ОТВЕТ'}</span>
+                    <span class="response-time">🕊️ ${timestamp}</span>
                 </div>
                 
-                <div class="section resonance-section">
-                    <div class="section-header">
-                        <span class="section-icon">🔥</span>
-                        <h4>РЕЗОНАНС</h4>
-                    </div>
-                    <div class="section-content">
-                        <p><em>${escapeHtml(response.resonance || 'Что этот вопрос открывает в тебе?')}</em></p>
-                    </div>
+                <div class="original-query">
+                    <div class="query-icon">🎯</div>
+                    <div class="query-text">${escapeHtml(query)}</div>
                 </div>
                 
-                <div class="section practice-section">
-                    <div class="section-header">
-                        <span class="section-icon">🧭</span>
-                        <h4>ПРАКТИКА</h4>
+                <div class="response-sections">
+                    <div class="section essence-section">
+                        <div class="section-header">
+                            <span class="section-icon">🦅</span>
+                            <h4>СУТЬ</h4>
+                        </div>
+                        <div class="section-content">
+                            <p>${escapeHtml(response.essence || 'Ответ формируется...')}</p>
+                        </div>
                     </div>
-                    <div class="section-content">
-                        <p>${escapeHtml(response.step || 'Сделай паузу на 3 дыхания и почувствуй, куда ведёт тебя этот вопрос.')}</p>
-                        <div class="practice-timer">
-                            <span class="timer-icon">⏳</span>
-                            <span>5-10 минут</span>
+                    
+                    <div class="section resonance-section">
+                        <div class="section-header">
+                            <span class="section-icon">🔥</span>
+                            <h4>РЕЗОНАНС</h4>
+                        </div>
+                        <div class="section-content">
+                            <p><em>${escapeHtml(response.resonance || 'Что этот вопрос открывает в тебе?')}</em></p>
+                        </div>
+                    </div>
+                    
+                    <div class="section practice-section">
+                        <div class="section-header">
+                            <span class="section-icon">🧭</span>
+                            <h4>ПРАКТИКА</h4>
+                        </div>
+                        <div class="section-content">
+                            <p>${escapeHtml(response.step || 'Сделай паузу на 3 дыхания и почувствуй, куда ведёт тебя этот вопрос.')}</p>
+                            <div class="practice-timer">
+                                <span class="timer-icon">⏳</span>
+                                <span>5-10 минут</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
+                ${collectiveHTML}
+                
+                <div class="response-actions">
+                    <button class="action-btn deepen-action" data-query="${escapeHtml(query)}">
+                        <span class="action-icon">⚡</span> УГЛУБИТЬ
+                    </button>
+                    <button class="action-btn save-action" data-query="${escapeHtml(query)}" data-essence="${escapeHtml(response.essence || '').substring(0, 50)}">
+                        <span class="action-icon">💾</span> СОХРАНИТЬ
+                    </button>
+                    <button class="action-btn ritual-action" data-type="${response.type || 'глубинный'}">
+                        <span class="action-icon">🌀</span> РИТУАЛ
+                    </button>
+                </div>
+                
+                <div class="response-footer">
+                    <p class="insight-note">Этот ответ — начало диалога, а не его конец.</p>
+                </div>
             </div>
-            
-            <div class="response-actions">
-                <button class="action-btn deepen-action" data-query="${escapeHtml(query)}">
-                    <span class="action-icon">⚡</span> УГЛУБИТЬ
-                </button>
-                <button class="action-btn save-action" data-query="${escapeHtml(query)}" data-essence="${escapeHtml(response.essence || '').substring(0, 50)}">
-                    <span class="action-icon">💾</span> СОХРАНИТЬ
-                </button>
-                <button class="action-btn ritual-action" data-type="${response.type || 'глубинный'}">
-                    <span class="action-icon">🌀</span> РИТУАЛ
-                </button>
-            </div>
-            
-            <div class="response-footer">
-                <p class="insight-note">Этот ответ — начало диалога, а не его конец.</p>
-            </div>
-        </div>
-    `;
-    
-    responseContainer.innerHTML = responseHTML;
-    
-    // Плавное появление
-    setTimeout(() => {
-        const responseView = responseContainer.querySelector('.response-view');
-        if (responseView) {
-            responseView.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            responseView.style.opacity = '1';
-            responseView.style.transform = 'translateY(0)';
-        }
-    }, 50);
-    
-    // Привязываем обработчики кнопок
-    bindResponseButtons();
-    
-    // Прокручиваем к результату
-    setTimeout(() => {
-        resultSection.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
-    }, 300);
-    
-    console.log('✅ Ответ отображён');
-}
+        `;
+        
+        // Плавное появление
+        setTimeout(() => {
+            const responseView = responseContainer.querySelector('.response-view');
+            if (responseView) {
+                responseView.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                responseView.style.opacity = '1';
+                responseView.style.transform = 'translateY(0)';
+            }
+        }, 50);
+        
+        // Привязываем обработчики кнопок
+        bindResponseButtons();
+        
+        // Прокручиваем к результату
+        setTimeout(() => {
+            resultSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }, 300);
+        
+        console.log('✅ Ответ отображён с коллективной мудростью');
+    }
     
     // 4. ПРЕДЛОЖЕНИЕ СЛЕДУЮЩЕГО ВОПРОСА
     function suggestNextQuestion(originalQuery, response) {
@@ -258,8 +230,8 @@ function showResponse(query, response) {
                 <span class="suggestion-icon">💡</span>
                 <h4>ВОПРОС ДЛЯ УГЛУБЛЕНИЯ</h4>
             </div>
-            <p class="suggestion-text">${suggestion}</p>
-            <button class="suggestion-btn" onclick="useSuggestion('${suggestion.replace(/'/g, "\\'")}')">
+            <p class="suggestion-text">${escapeHtml(suggestion)}</p>
+            <button class="suggestion-btn" onclick="useSuggestion('${escapeHtml(suggestion).replace(/'/g, "\\'")}')">
                 ИСПОЛЬЗОВАТЬ ДЛЯ ПОИСКА
             </button>
         `;
@@ -274,7 +246,7 @@ function showResponse(query, response) {
             <div class="error-state">
                 <div class="error-icon">🌀</div>
                 <h3>ПУТЬ ПРЕРВАЛСЯ</h3>
-                <p class="error-message">${message}</p>
+                <p class="error-message">${escapeHtml(message)}</p>
                 <div class="error-actions">
                     <button class="retry-btn" onclick="retrySearch()">ПОПРОБОВАТЬ СНОВА</button>
                     <button class="simplify-btn" onclick="simplifyQuestion()">УПРОСТИТЬ ВОПРОС</button>
@@ -282,108 +254,7 @@ function showResponse(query, response) {
             </div>
         `;
     }
-
-    // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ БЕЗОПАСНОГО ОТОБРАЖЕНИЯ
-
-// Экранирование HTML для безопасности
-function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// Привязка обработчиков кнопок в ответе
-function bindResponseButtons() {
-    // Кнопка "Углубить"
-    document.querySelectorAll('.deepen-action').forEach(btn => {
-        btn.onclick = function() {
-            const query = this.getAttribute('data-query');
-            const deepenVariants = [
-                `Раскрой суть вопроса "${query}" еще глубже`,
-                `Что является корневой причиной вопроса "${query}"?`,
-                `Как ${query} связано с моей жизненной миссией?`
-            ];
-            const newQuery = deepenVariants[Math.floor(Math.random() * deepenVariants.length)];
-            searchInput.value = newQuery;
-            performSearch(newQuery);
-        };
-    });
     
-    // Кнопка "Сохранить"
-    document.querySelectorAll('.save-action').forEach(btn => {
-        btn.onclick = function() {
-            const query = this.getAttribute('data-query');
-            const essence = this.getAttribute('data-essence');
-            alert(`💾 Сохранено в "Сокровищницу Феникса":\n\nВопрос: ${query}\n\nСуть: ${essence}...`);
-        };
-    });
-    
-    // Кнопка "Ритуал"
-    document.querySelectorAll('.ritual-action').forEach(btn => {
-        btn.onclick = function() {
-            const type = this.getAttribute('data-type');
-            startRitual(type);
-        };
-    });
-}
-
-// Функция запуска ритуала
-function startRitual(type) {
-    const rituals = {
-        'глубинный': '🌀 Ритуал "Погружение в Суть"',
-        'практический': '🛠️ Практика "Воплощение Действия"',
-        'эмоциональный': '💖 Церемония "Исцеление Сердца"',
-        'философский': '🧠 Медитация "Бесконечность Вопроса"',
-        'исследование': '🔍 Практика "Картография Смыслов"'
-    };
-    
-    const ritual = rituals[type] || '🌀 Базовая практика осознанности';
-    
-    // Показываем активацию
-    const ritualHTML = `
-        <div class="ritual-activation" style="margin-top: 30px; padding: 25px; background: rgba(26,26,46,0.9); border-radius: 15px; border: 2px solid #ffd166; text-align: center;">
-            <div class="ritual-header">
-                <span class="ritual-icon" style="font-size: 2em;">🔥</span>
-                <h4 style="margin: 10px 0;">АКТИВАЦИЯ РИТУАЛА</h4>
-            </div>
-            <p>Запускаю <strong>${ritual}</strong>...</p>
-            <div class="countdown" style="font-size: 3em; font-weight: bold; color: #ff6b35; margin: 20px 0;">3</div>
-            <p class="ritual-instruction" style="opacity: 0.8;">Закрой глаза и следи за дыханием. Ритуал начнётся через:</p>
-        </div>
-    `;
-    
-    // Добавляем к текущему ответу
-    responseContainer.insertAdjacentHTML('beforeend', ritualHTML);
-    
-    // Анимация обратного отсчёта
-    let count = 3;
-    const countdownEl = responseContainer.querySelector('.countdown');
-    const interval = setInterval(() => {
-        count--;
-        if (count > 0) {
-            countdownEl.textContent = count;
-        } else {
-            clearInterval(interval);
-            document.querySelector('.ritual-activation').innerHTML = `
-                <div style="text-align:center; padding:20px;">
-                    <span style="font-size:2em;">🌀</span><br>
-                    <strong>Ритуал активирован</strong><br>
-                    <em>Продолжай в пространстве Феникс-Тайм</em><br><br>
-                    <button onclick="continueSearch()" style="background:#ff6b35; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">
-                        Вернуться к поиску
-                    </button>
-                </div>
-            `;
-        }
-    }, 1000);
-}
-
-// Функция возврата к поиску
-window.continueSearch = function() {
-    document.querySelector('.ritual-activation').remove();
-    searchInput.focus();
-};
     // ====================
     // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
     // ====================
@@ -410,9 +281,17 @@ window.continueSearch = function() {
             'философский': '🌀',
             'эмоциональный': '💖',
             'интуитивный': '🔮',
-            'исследование': '🧪'
+            'исследование': '🧪',
+            'резервный': '🛡️'
         };
         return icons[type] || '✨';
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
     
     function saveToHistory(query, response) {
@@ -421,11 +300,98 @@ window.continueSearch = function() {
             id: Date.now(),
             query,
             response,
+            collective: response.collective,
             timestamp: new Date().toISOString()
         });
         
         if (history.length > 20) history.pop();
         localStorage.setItem('phoenixHistory', JSON.stringify(history));
+    }
+    
+    // Привязка обработчиков кнопок
+    function bindResponseButtons() {
+        // Кнопка "Углубить"
+        document.querySelectorAll('.deepen-action').forEach(btn => {
+            btn.onclick = function() {
+                const query = this.getAttribute('data-query');
+                const deepenVariants = [
+                    `Раскрой суть вопроса "${query}" еще глубже`,
+                    `Что является корневой причиной вопроса "${query}"?`,
+                    `Как ${query} связано с моей жизненной миссией?`
+                ];
+                const newQuery = deepenVariants[Math.floor(Math.random() * deepenVariants.length)];
+                searchInput.value = newQuery;
+                performSearch(newQuery);
+            };
+        });
+        
+        // Кнопка "Сохранить"
+        document.querySelectorAll('.save-action').forEach(btn => {
+            btn.onclick = function() {
+                const query = this.getAttribute('data-query');
+                const essence = this.getAttribute('data-essence');
+                alert(`💾 Сохранено в "Сокровищницу Феникса":\n\nВопрос: ${query}\n\nСуть: ${essence}...`);
+            };
+        });
+        
+        // Кнопка "Ритуал"
+        document.querySelectorAll('.ritual-action').forEach(btn => {
+            btn.onclick = function() {
+                const type = this.getAttribute('data-type');
+                startRitual(type);
+            };
+        });
+    }
+    
+    // Функция запуска ритуала
+    function startRitual(type) {
+        const rituals = {
+            'глубинный': '🌀 Ритуал "Погружение в Суть"',
+            'практический': '🛠️ Практика "Воплощение Действия"',
+            'эмоциональный': '💖 Церемония "Исцеление Сердца"',
+            'философский': '🧠 Медитация "Бесконечность Вопроса"',
+            'исследование': '🔍 Практика "Картография Смыслов"'
+        };
+        
+        const ritual = rituals[type] || '🌀 Базовая практика осознанности';
+        
+        // Показываем активацию
+        const ritualHTML = `
+            <div class="ritual-activation">
+                <div class="ritual-header">
+                    <span class="ritual-icon">🔥</span>
+                    <h4>АКТИВАЦИЯ РИТУАЛА</h4>
+                </div>
+                <p>Запускаю <strong>${ritual}</strong>...</p>
+                <div class="countdown">3</div>
+                <p class="ritual-instruction">Закрой глаза и следи за дыханием. Ритуал начнётся через:</p>
+            </div>
+        `;
+        
+        // Добавляем к текущему ответу
+        responseContainer.insertAdjacentHTML('beforeend', ritualHTML);
+        
+        // Анимация обратного отсчёта
+        let count = 3;
+        const countdownEl = responseContainer.querySelector('.countdown');
+        const interval = setInterval(() => {
+            count--;
+            if (count > 0) {
+                countdownEl.textContent = count;
+            } else {
+                clearInterval(interval);
+                document.querySelector('.ritual-activation').innerHTML = `
+                    <div style="text-align:center; padding:20px;">
+                        <span style="font-size:2em;">🌀</span><br>
+                        <strong>Ритуал активирован</strong><br>
+                        <em>Продолжай в пространстве Феникс-Тайм</em><br><br>
+                        <button onclick="continueSearch()" style="background:#ff6b35; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">
+                            Вернуться к поиску
+                        </button>
+                    </div>
+                `;
+            }
+        }, 1000);
     }
     
     // ====================
@@ -455,68 +421,12 @@ window.continueSearch = function() {
     
     // Автофокус
     setTimeout(() => {
-        searchInput.focus();
+        if (searchInput) searchInput.focus();
     }, 1000);
     
     // ====================
     // ГЛОБАЛЬНЫЕ ФУНКЦИИ
     // ====================
-    
-    window.deepenQuestion = function(query) {
-        const deepenVariants = [
-            `Раскрой суть вопроса "${query}" еще глубже`,
-            `Что является корневой причиной вопроса "${query}"?`,
-            `Как ${query} связано с моей жизненной миссией?`
-        ];
-        const newQuery = deepenVariants[Math.floor(Math.random() * deepenVariants.length)];
-        searchInput.value = newQuery;
-        performSearch(newQuery);
-    };
-    
-    window.saveResponse = function(query, essence) {
-        alert(`Сохранено в "Сокровищницу Феникса":\n\nВопрос: ${query}\n\nСуть: ${essence}...`);
-        // В будущем — интеграция с бэкендом
-    };
-    
-    window.startRitual = function(type) {
-        const rituals = {
-            'глубинный': '🌀 Ритуал "Погружение в Суть"',
-            'практический': '🛠️ Практика "Воплощение Действия"',
-            'эмоциональный': '💖 Церемония "Исцеление Сердца"'
-        };
-        
-        const ritual = rituals[type] || '🌀 Базовая практика осознанности';
-        
-        responseContainer.innerHTML += `
-            <div class="ritual-activation">
-                <div class="ritual-header">
-                    <span class="ritual-icon">🔥</span>
-                    <h4>АКТИВАЦИЯ РИТУАЛА</h4>
-                </div>
-                <p>Запускаю <strong>${ritual}</strong>...</p>
-                <div class="countdown">3</div>
-                <p class="ritual-instruction">Закрой глаза и следи за дыханием. Ритуал начнётся через:</p>
-            </div>
-        `;
-        
-        let count = 3;
-        const countdownEl = document.querySelector('.countdown');
-        const interval = setInterval(() => {
-            count--;
-            if (count > 0) {
-                countdownEl.textContent = count;
-            } else {
-                clearInterval(interval);
-                document.querySelector('.ritual-activation').innerHTML = `
-                    <p style="text-align:center; padding:20px;">
-                        <span style="font-size:2em;">🌀</span><br>
-                        <strong>Ритуал активирован</strong><br>
-                        <em>Продолжай в пространстве Феникс-Тайм</em>
-                    </p>
-                `;
-            }
-        }, 1000);
-    };
     
     window.useSuggestion = function(suggestion) {
         searchInput.value = suggestion;
@@ -540,6 +450,12 @@ window.continueSearch = function() {
             searchInput.value = 'В чём мой следующий шаг?';
             performSearch(searchInput.value);
         }
+    };
+    
+    window.continueSearch = function() {
+        const ritualEl = document.querySelector('.ritual-activation');
+        if (ritualEl) ritualEl.remove();
+        if (searchInput) searchInput.focus();
     };
     
     console.log('✅ Система инициализирована. Ожидаю вопросы...');
@@ -628,6 +544,8 @@ const injectStyles = () => {
         .глубинный { background: rgba(255,107,53,0.2); color: #ff6b35; }
         .практический { background: rgba(66,153,225,0.2); color: #4299e1; }
         .философский { background: rgba(159,122,234,0.2); color: #9f7aea; }
+        .эмоциональный { background: rgba(236,112,99,0.2); color: #ec7063; }
+        .исследование { background: rgba(46,204,113,0.2); color: #2ecc71; }
         
         .original-query {
             background: linear-gradient(90deg, rgba(255,107,53,0.1), transparent);
@@ -683,6 +601,136 @@ const injectStyles = () => {
             padding: 8px 15px;
             border-radius: 20px;
             margin-top: 15px;
+        }
+        
+        /* КОЛЛЕКТИВНАЯ МУДРОСТЬ */
+        .collective-wisdom {
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 46, 0.95), 
+                rgba(41, 128, 185, 0.15));
+            border: 1px solid rgba(52, 152, 219, 0.4);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 30px 0 20px 0;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .collective-wisdom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                #3498db, #9b59b6, #e74c3c, #f1c40f);
+            animation: gradientShift 8s infinite alternate;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        
+        .collective-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .collective-icon {
+            font-size: 2.2rem;
+            animation: pulse 3s infinite;
+            filter: drop-shadow(0 0 8px rgba(52, 152, 219, 0.5));
+        }
+        
+        .collective-header h4 {
+            margin: 0;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.4rem;
+        }
+        
+        .collective-stats {
+            font-size: 1.2rem;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 12px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .people-count {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 10px;
+            text-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .collective-message {
+            font-style: italic;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        
+        .similar-questions {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+        
+        .similar-questions > p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            color: #ffd166;
+        }
+        
+        .similar-questions ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        
+        .similar-questions li {
+            padding: 14px 18px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid #9b59b6;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .similar-questions li::before {
+            content: '👤';
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+        
+        .similar-questions li:hover {
+            transform: translateX(8px);
+            background: rgba(155, 89, 182, 0.15);
+            box-shadow: 0 5px 20px rgba(155, 89, 182, 0.2);
+        }
+        
+        .similar-questions li:hover::before {
+            opacity: 1;
+            transform: scale(1.2);
         }
         
         /* Кнопки действий */
@@ -843,6 +891,26 @@ const injectStyles = () => {
             .searching-animation {
                 width: 120px;
                 height: 120px;
+            }
+            
+            .collective-wisdom {
+                padding: 20px;
+                margin: 20px 0;
+            }
+            
+            .people-count {
+                font-size: 2.2rem;
+            }
+            
+            .collective-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .similar-questions li {
+                padding: 12px 15px;
+                font-size: 0.95rem;
             }
         }
     `;
