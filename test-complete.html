@@ -1,17 +1,31 @@
-<script>
-// Тест 1: API Search
-fetch('https://phoenix-search-prototype.vercel.app/api/search', {
-  method: 'POST',
-  headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({query: 'Тест коллективной мудрости'})
-})
-.then(r => r.json())
-.then(data => {
-  console.log('✅ Search API:', data.success, 'Collective:', data.collective?.peopleCount);
-});
+// Полная проверка системы
+const tests = [
+    // 1. API Search
+    fetch('https://phoenix-search-prototype.vercel.app/api/search', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({query: 'Финальный тест системы'})
+    }).then(r => r.json()),
 
-// Тест 2: PhoenixSearch класс
-const phoenix = new PhoenixSearch();
-phoenix.search('Как найти путь?')
-  .then(res => console.log('✅ PhoenixSearch:', res.type, 'Collective:', res.collective?.peopleCount));
-</script>
+    // 2. API Questions
+    fetch('https://phoenix-search-prototype.vercel.app/api/questions?query=тест')
+        .then(r => r.json()),
+
+    // 3. PhoenixSearch класс
+    (async () => {
+        const phoenix = new PhoenixSearch();
+        return await phoenix.search('Тест коллективной мудрости');
+    })()
+];
+
+Promise.allSettled(tests).then(results => {
+    console.log('🎯 ФИНАЛЬНЫЕ РЕЗУЛЬТАТЫ:');
+    results.forEach((result, i) => {
+        if (result.status === 'fulfilled') {
+            console.log(`✅ Тест ${i+1} пройден:`, 
+                result.value.success || result.value.type || 'OK');
+        } else {
+            console.log(`❌ Тест ${i+1} не пройден:`, result.reason);
+        }
+    });
+});
