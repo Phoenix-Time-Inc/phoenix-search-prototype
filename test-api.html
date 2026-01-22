@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Тест API Феникс-Поиска</title>
+</head>
+<body>
+    <h1>🧪 Тестируем API</h1>
+    
+    <div>
+        <input type="text" id="queryInput" placeholder="Введите вопрос..." style="padding: 10px; width: 300px;">
+        <button onclick="testAPI()">Тестировать</button>
+    </div>
+    
+    <div id="result" style="margin-top: 20px; padding: 20px; background: #f0f0f0; border-radius: 10px;"></div>
+    
+    <script>
+    async function testAPI() {
+        const query = document.getElementById('queryInput').value || "Как найти своё призвание?";
+        const resultDiv = document.getElementById('result');
+        
+        resultDiv.innerHTML = '<p>🔄 Отправляю запрос...</p>';
+        
+        try {
+            const response = await fetch('https://phoenix-search-prototype.vercel.app/api/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query })
+            });
+            
+            const data = await response.json();
+            
+            resultDiv.innerHTML = `
+                <h3>✅ Ответ получен!</h3>
+                <p><strong>Источник:</strong> ${data.source || 'локальная мудрость'}</p>
+                <p><strong>Суть:</strong> ${data.response.essence}</p>
+                <p><strong>Резонанс:</strong> ${data.response.resonance}</p>
+                <p><strong>Практика:</strong> ${data.response.step}</p>
+                <p><strong>Тип:</strong> ${data.response.type}</p>
+                <pre style="background: white; padding: 10px; overflow: auto;">
+${JSON.stringify(data, null, 2)}
+                </pre>
+            `;
+            
+        } catch (error) {
+            resultDiv.innerHTML = `
+                <h3>❌ Ошибка!</h3>
+                <p>${error.message}</p>
+                <p>Проверь консоль (F12) для деталей.</p>
+            `;
+            console.error('Ошибка теста API:', error);
+        }
+    }
+    
+    // Автотест при загрузке
+    setTimeout(testAPI, 1000);
+    </script>
+</body>
+</html>
