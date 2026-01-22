@@ -532,3 +532,86 @@ footer {
         width: 200px;
     }
 }
+
+/* ====================== */
+/* КРИТИЧЕСКИЕ ИСПРАВЛЕНИЯ */
+/* ====================== */
+
+/* Гарантируем видимость resultSection */
+#resultSection {
+    display: block !important;
+    min-height: 500px !important;
+    background: rgba(26, 26, 46, 0.98) !important;
+    border: 2px solid #ff6b35 !important;
+    border-radius: 20px !important;
+    margin-top: 30px !important;
+    margin-bottom: 30px !important;
+    padding: 30px !important;
+    color: #f0f0f0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    position: relative !important;
+    z-index: 100 !important;
+    box-shadow: 0 10px 40px rgba(255, 107, 53, 0.2) !important;
+}
+
+/* Гарантируем видимость содержимого */
+#resultSection * {
+    color: #f0f0f0 !important;
+}
+
+/* Контейнер для ответов */
+#responseContainer {
+    display: block !important;
+    opacity: 1 !important;
+    min-height: 300px !important;
+    animation: fadeIn 0.5s ease forwards !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Улучшаем видимость текста */
+.section-content p {
+    font-size: 1.1rem !important;
+    line-height: 1.6 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Делаем кнопки заметнее */
+.action-btn {
+    background: linear-gradient(45deg, #ff6b35, #ff8e53) !important;
+    color: white !important;
+    border: none !important;
+    padding: 15px 25px !important;
+    border-radius: 12px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    margin: 5px !important;
+}
+
+.action-btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 25px rgba(255, 107, 53, 0.4) !important;
+}
+
+/* Улучшаем отображение на мобильных */
+@media (max-width: 768px) {
+    #resultSection {
+        padding: 20px !important;
+        margin: 20px 10px !important;
+        min-height: 400px !important;
+    }
+    
+    .response-actions {
+        flex-direction: column !important;
+    }
+    
+    .action-btn {
+        width: 100% !important;
+        margin: 8px 0 !important;
+    }
+}
