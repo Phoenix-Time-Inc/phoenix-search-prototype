@@ -1,23 +1,13 @@
 {
   "functions": {
     "api/search.js": {
-      "runtime": "nodejs24.x"
+      "runtime": "@vercel/node@4.0.0"
     }
   },
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api/$1"
-    }
-  ],
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "**/*.html",
-      "use": "@vercel/static"
     }
   ]
 }
