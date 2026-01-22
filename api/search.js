@@ -1,121 +1,37 @@
-// api/search.js - Упрощённая рабочая версия для Vercel
-export default async function handler(req, res) {
-  console.log('🔥 Phoenix API вызван');
-  
-  // Включаем CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  // Обрабатываем OPTIONS запрос
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+// В начале функции handler, после получения ответа:
+const localResponse = getLocalWisdomResponse(query);
+
+// ДОБАВЛЯЕМ КОЛЛЕКТИВНУЮ МУДРОСТЬ
+let collectiveWisdom = null;
+try {
+  const wisdomRes = await fetch(`${process.env.VERCEL_URL}/api/questions?query=${encodeURIComponent(query)}`);
+  if (wisdomRes.ok) {
+    collectiveWisdom = await wisdomRes.json();
   }
-  
-  // Только POST
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Только POST' });
-  }
-  
-  try {
-    const { query } = req.body;
-    
-    if (!query || query.trim().length < 2) {
-      return res.status(400).json({ 
-        error: 'Минимум 2 символа',
-        fallback: getFallbackResponse(query)
-      });
-    }
-    
-    console.log('📝 Запрос:', query.substring(0, 50) + '...');
-    
-    // Временно отключаем OpenAI из-за блокировок
-    // const openaiResult = await tryOpenAI(query);
-    // if (openaiResult.success) {
-    //   return res.json(openaiResult);
-    // }
-    
-    // Используем локальную мудрость
-    const localResponse = getLocalWisdomResponse(query);
-    
-    return res.status(200).json({
-      success: true,
-      source: 'local_wisdom',
-      response: localResponse,
-      debug: {
-        timestamp: new Date().toISOString(),
-        queryLength: query.length
-      }
-    });
-    
-  } catch (error) {
-    console.error('❌ Ошибка в API:', error);
-    
-    return res.status(200).json({
-      success: true,
-      source: 'fallback',
-      response: getFallbackResponse('ошибка системы'),
-      error: error.message
-    });
-  }
+} catch (error) {
+  console.log('Коллективная мудрость временно недоступна');
 }
 
-// Локальная мудрость (такая же как в phoenix.js для консистентности)
-function getLocalWisdomResponse(query) {
-  const queryLower = query.toLowerCase();
-  let type = 'исследование';
-  
-  if (queryLower.includes('призвание') || queryLower.includes('назначение')) type = 'глубинный';
-  else if (queryLower.includes('прокрастинация') || queryLower.includes('лень')) type = 'практический';
-  else if (queryLower.includes('страх') || queryLower.includes('боюсь')) type = 'эмоциональный';
-  else if (queryLower.includes('смысл') || queryLower.includes('зачем')) type = 'философский';
-  
-  const wisdomBase = {
-    'глубинный': {
-      essence: `Призвание — это не то, что ты находишь, а то, что проявляется, когда ты начинаешь действовать из целостности. Твой вопрос "${query}" — уже первый шаг.`,
-      resonance: 'Что бы ты делал, даже если бы за это не платили?',
-      step: 'Практика "След мастера": неделю посвящай 20 минут в день делу, которое заставляет тебя забыть о времени.',
-      type: 'глубинный'
-    },
-    'практический': {
-      essence: `Прокрастинация — не враг, а сигнальная система. Она показывает, где энергия встречает сопротивление. "${query}" указывает на место для перестройки.`,
-      resonance: 'Что в откладываемом деле кажется наименее "твоим"?',
-      step: 'Метод "2 минуты": сделай только первые 2 минуты самого страшного дела. Не больше.',
-      type: 'практический'
-    },
-    'эмоциональный': {
-      essence: `Страх — страж порога. Твой вопрос "${query}" отмечает место, где начинается следующий уровень роста.`,
-      resonance: 'Если бы этот страх был защитником, что бы он защищал?',
-      step: 'Диалог со страхом: напиши ему письмо и дай ему ответить.',
-      type: 'эмоциональный'
-    },
-    'философский': {
-      essence: `Смысл рождается не в ответах, а в качестве вопрошания. "${query}" — это уже проживание смысла.`,
-      resonance: 'Что перестаёт быть важным, когда ты глубоко погружаешься в этот вопрос?',
-      step: 'Медитация "Вопросительное молчание": 7 минут просто будь с вопросом.',
-      type: 'философский'
-    },
-    'исследование': {
-      essence: `Каждый глубокий вопрос содержит семя ответа. В "${query}" уже есть всё необходимое — осталось сменить фокус.`,
-      resonance: 'Какая часть этого вопроса чувствуется самой живой?',
-      step: 'Свободное письмо: 5 минут пиши всё, что приходит в голову по этой теме.',
-      type: 'исследование'
-    }
-  };
-  
-  return wisdomBase[type] || wisdomBase['исследование'];
-}
+// ОТПРАВЛЯЕМ ВОПРОС В КОЛЛЕКТИВНУЮ БАЗУ (асинхронно, не ждём)
+fetch(`${process.env.VERCEL_URL}/api/questions`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    query: query,
+    response: localResponse,
+    userId: req.headers['x-vercel-id'] || 'anonymous'
+  })
+}).catch(() => {}); // Игнорируем ошибки
 
-function getFallbackResponse(query) {
-  return {
-    essence: `Истинный ответ на "${query}" зреет в тишине между мыслями.`,
-    resonance: 'Что происходит, когда ты отпускаешь потребность в немедленном ответе?',
-    step: 'Пауза на чай: приготовь напиток и просто наблюдай за паром 5 минут.',
-    type: 'резервный'
-  };
-}
-
-// Заглушка для OpenAI (пока не используется)
-async function tryOpenAI(query) {
-  return { success: false };
-}
+// ВОЗВРАЩАЕМ ОТВЕТ С КОЛЛЕКТИВНОЙ МУДРОСТЬЮ
+return res.status(200).json({
+  success: true,
+  source: 'local_wisdom',
+  response: localResponse,
+  collective: collectiveWisdom ? {
+    peopleCount: collectiveWisdom.count || 0,
+    message: collectiveWisdom.wisdom?.message,
+    similarQuestions: collectiveWisdom.questions?.slice(0, 2)
+  } : null,
+  debug: { timestamp: new Date().toISOString() }
+});
