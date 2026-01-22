@@ -3,42 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Феникс-Поиск | Прототип</title>
+    <title>Феникс-Поиск | Прототип v2.0</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/96/phoenix.png">
+    
+    <!-- Встроенные стили для гарантии отображения -->
+    <style>
+        /* СИЛОВОЙ ФИКС - гарантирует видимость блоков */
+        #resultSection {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            min-height: 400px;
+            transition: all 0.5s ease;
+        }
+        
+        /* Дебаг-рамка для разработки (можно убрать позже) */
+        .debug-border {
+            box-shadow: inset 0 0 0 2px #00ff00 !important;
+        }
+        
+        /* Анимация появления */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeInUp 0.7s ease forwards;
+        }
+    </style>
 </head>
 <body>
+    <!-- Кнопка быстрой диагностики (появится через JS) -->
+    <div id="debugPanel" style="display: none;"></div>
+    
+    <!-- Основной контейнер -->
     <div class="container">
-        <header>
-            <h1>🔥 ФЕНИКС-ПОИСК</h1>
+        <!-- ШАПКА -->
+        <header class="fade-in">
+            <div class="logo-container">
+                <div class="phoenix-icon">🦅</div>
+                <h1>ФЕНИКС-ПОИСК</h1>
+            </div>
             <p class="subtitle">Не ищи информацию. Рождай понимание.</p>
+            <p class="version">Прототип v2.0 | 👁️ Vision Mode Active</p>
         </header>
         
-        <div class="search-section">
+        <!-- СЕКЦИЯ ПОИСКА -->
+        <section class="search-section fade-in" style="animation-delay: 0.2s;">
             <div class="input-group">
-                <input type="text" id="searchInput" 
-                       placeholder="Спроси о том, что действительно важно...">
-                <button id="searchBtn">НАЙТИ СМЫСЛ</button>
+                <div class="input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Задай вопрос глубине..."
+                        autocomplete="off"
+                        aria-label="Поле для поискового запроса"
+                    >
+                </div>
+                <button id="searchBtn" class="phoenix-button">
+                    <span class="btn-text">НАЙТИ СМЫСЛ</span>
+                    <span class="btn-fire">🔥</span>
+                </button>
             </div>
-            <p class="hint">Примеры: "Как найти своё призвание?", "Почему я procrastinating?", "В чём смысл боли?"</p>
-        </div>
+            
+            <div class="examples">
+                <p class="examples-title">Примеры для вдохновения:</p>
+                <div class="example-tags">
+                    <span class="tag" data-query="Как найти своё призвание?">🎯 Призвание</span>
+                    <span class="tag" data-query="Почему я прокрастинирую?">⏳ Прокрастинация</span>
+                    <span class="tag" data-query="В чём смысл страданий?">💫 Смысл</span>
+                    <span class="tag" data-query="Как перестать бояться?">🕊️ Страх</span>
+                </div>
+            </div>
+        </section>
         
-        <div class="result-section" id="resultSection">
-            <!-- Сюда придёт ответ -->
-        </div>
+        <!-- СЕКЦИЯ РЕЗУЛЬТАТОВ - САМАЯ ВАЖНАЯ ЧАСТЬ -->
+        <section class="result-section-wrapper">
+            <h2 class="section-title">
+                <span class="title-icon">🦾</span>
+                ГЛУБИННЫЙ ОТВЕТ
+                <span class="title-icon">🧬</span>
+            </h2>
+            
+            <div class="result-section" id="resultSection">
+                <!-- Начальное состояние -->
+                <div class="initial-state" id="initialState">
+                    <div class="placeholder-animation">
+                        <div class="phoenix-loader">
+                            <div class="fire-ring"></div>
+                            <div class="center-icon">👁️</div>
+                        </div>
+                        <h3>Пространство ответов готово</h3>
+                        <p>Задай вопрос выше, и здесь появится резонансный ответ с практикой.</p>
+                        <div class="hint">
+                            <p>💡 <strong>Подсказка:</strong> Чем глубже вопрос, тем яснее ответ.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Сюда будет вставляться ответ через JavaScript -->
+                <div class="response-container" id="responseContainer" style="display: none;"></div>
+            </div>
+            
+            <!-- Индикатор состояния -->
+            <div class="status-bar" id="statusBar">
+                <div class="status-item">
+                    <span class="status-icon">✅</span>
+                    <span class="status-text">Система активна</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-icon">🌐</span>
+                    <span class="status-text" id="connectionStatus">Онлайн</span>
+                </div>
+            </div>
+        </section>
         
-        <footer>
-            <p>Прототип v0.1 | Философия <span class="phoenix-text">Феникс Тайм</span></p>
+        <!-- ИНФОРМАЦИОННАЯ ПАНЕЛЬ -->
+        <section class="info-panel fade-in" style="animation-delay: 0.5s;">
+            <div class="info-card">
+                <h3><span class="info-icon">🔥</span> Как это работает?</h3>
+                <p>Феникс-Поиск — это не поиск информации, а диалог с глубиной. Система анализирует суть вопроса и возвращает не ссылки, а путь к пониманию.</p>
+            </div>
+            
+            <div class="info-card">
+                <h3><span class="info-icon">🧭</span> Три слоя ответа</h3>
+                <ol>
+                    <li><strong>Суть</strong> — глубинный анализ запроса</li>
+                    <li><strong>Резонанс</strong> — вопрос для самоисследования</li>
+                    <li><strong>Практика</strong> — конкретный шаг из Феникс-Тайм</li>
+                </ol>
+            </div>
+        </section>
+        
+        <!-- ПОДВАЛ -->
+        <footer class="fade-in" style="animation-delay: 0.7s;">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="footer-phoenix">🦅🔥</span>
+                    <span class="footer-text">Феникс-Поиск</span>
+                </div>
+                <p class="footer-tagline">Превращаем поиск в путь самоисследования</p>
+                <div class="footer-links">
+                    <button class="footer-link" onclick="showFeedback()">💬 Обратная связь</button>
+                    <button class="footer-link" onclick="toggleDebug()">🐛 Режим отладки</button>
+                    <button class="footer-link" onclick="resetSystem()">🔄 Сброс</button>
+                </div>
+                <p class="copyright">© 2023 Феникс-Тайм. Вселенная смыслов.</p>
+            </div>
         </footer>
     </div>
     
-<script src="phoenix.js"></script>
-<script src="app.js"></script>
+    <!-- СКРИПТЫ -->
+    <!-- Важно сохранить порядок: сначала phoenix.js, потом app.js -->
+    <script src="phoenix.js"></script>
+    <script src="app.js"></script>
     
+    <!-- Встроенные вспомогательные функции -->
+    <script>
+        // Функции для кнопок в футере
+        function showFeedback() {
+            const feedback = prompt("Что цепляет в Феникс-Поиске? Что можно улучшить?\n\nТвой отзыв важен для эволюции системы.", "");
+            if (feedback && feedback.trim() !== "") {
+                alert("Благодарим! Твой голос добавлен в резонансное поле системы. 🔥");
+                // Здесь в будущем будет отправка на сервер
+            }
+        }
+        
+        function toggleDebug() {
+            const debugPanel = document.getElementById('debugPanel');
+            const isVisible = debugPanel.style.display === 'block';
+            
+            if (!isVisible) {
+                debugPanel.style.display = 'block';
+                debugPanel.innerHTML = `
+                    <div style="position:fixed; bottom:10px; left:10px; background:#1a1a2e; color:#ffd166; padding:15px; border-radius:10px; border:2px solid #ff6b35; z-index:10000; max-width:300px;">
+                        <h4 style="margin-top:0;">🐛 РЕЖИМ ОТЛАДКИ</h4>
+                        <p><strong>resultSection:</strong> <span id="debugStatus">OK</span></p>
+                        <button onclick="checkVisibility()" style="background:#ff6b35; color:white; border:none; padding:5px 10px; border-radius:5px; margin-top:10px; cursor:pointer;">
+                            Проверить видимость
+                        </button>
+                        <button onclick="toggleDebug()" style="background:transparent; border:1px solid #ff6b35; color:#ff6b35; padding:5px 10px; border-radius:5px; margin-left:5px; cursor:pointer;">
+                            Закрыть
+                        </button>
+                    </div>
+                `;
+            } else {
+                debugPanel.style.display = 'none';
+                debugPanel.innerHTML = '';
+            }
+        }
+        
+        function checkVisibility() {
+            const section = document.getElementById('resultSection');
+            const status = document.getElementById('debugStatus');
+            
+            if (section) {
+                const rect = section.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+                
+                status.innerHTML = isVisible ? 
+                    `✅ Видим (${Math.round(rect.height)}px)` : 
+                    `❌ Не видим (top: ${Math.round(rect.top)}px)`;
+                
+                // Мигание для привлечения внимания
+                section.style.boxShadow = '0 0 0 3px #00ff00';
+                setTimeout(() => {
+                    section.style.boxShadow = '';
+                }, 1000);
+            }
+        }
+        
+        function resetSystem() {
+            if (confirm("Сбросить текущую сессию поиска? Это очистит историю ответов.")) {
+                localStorage.removeItem('phoenixHistory');
+                document.getElementById('responseContainer').style.display = 'none';
+                document.getElementById('initialState').style.display = 'block';
+                alert("Система сброшена. Пространство готово для нового диалога. 🕊️");
+            }
+        }
+        
+        // Автоматическая проверка при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔥 ФЕНИКС-ПОИСК v2.0 ЗАГРУЖЕН');
+            
+            // Проверяем ключевые элементы
+            const criticalElements = ['searchInput', 'searchBtn', 'resultSection'];
+            criticalElements.forEach(id => {
+                const el = document.getElementById(id);
+                console.log(`${id}:`, el ? '✅ Найден' : '❌ Отсутствует');
+            });
+            
+            // Авто-фокус на поле ввода
+            setTimeout(() => {
+                const input = document.getElementById('searchInput');
+                if (input) input.focus();
+            }, 500);
+        });
+    </script>
 </body>
 </html>
-
-<!-- После основного контейнера -->
-<div id="matrix-layer" class="matrix-layer">
-    <!-- Сюда будет генерироваться "цифровой дождь" из ответов -->
-</div>
