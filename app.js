@@ -1,205 +1,514 @@
+// app.js - Основной файл с улучшенной логикой
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
     const resultSection = document.getElementById('resultSection');
     
-    // Примеры вопросов для вдохновения
+    // Инициализируем поисковую систему
+    const phoenix = new PhoenixSearch();
+    
+    // Примеры вопросов для placeholder
     const examples = [
         "Как найти своё призвание?",
         "Почему я прокрастинирую?",
         "В чём смысл боли?",
         "Как перестать бояться?",
-        "Что такое настоящая свобода?"
+        "Что такое настоящая свобода?",
+        "Как жить осознанно?",
+        "Зачем нужны страдания?",
+        "Как услышать своё сердце?",
+        "Что значит быть собой?",
+        "Как найти внутренний покой?"
     ];
     
     let exampleIndex = 0;
     
-    // Анимация примеров в placeholder
+    // Циклическая смена примеров
     function cycleExamples() {
-        searchInput.placeholder = examples[exampleIndex];
-        exampleIndex = (exampleIndex + 1) % examples.length;
+        if (searchInput.value === '') {
+            searchInput.placeholder = examples[exampleIndex];
+            exampleIndex = (exampleIndex + 1) % examples.length;
+        }
     }
     
+    // Запускаем цикл каждые 3 секунды
     setInterval(cycleExamples, 3000);
     
-    // Обработчик поиска
+    // Обработчики событий
     searchBtn.addEventListener('click', performSearch);
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') performSearch();
     });
     
+    // Функция поиска
     async function performSearch() {
         const query = searchInput.value.trim();
-        if (!query) return;
+        if (!query) {
+            showError('Вопрос — это уже начало пути. Напиши что-то из глубины.');
+            return;
+        }
         
         // Показываем состояние загрузки
+        showLoading(query);
+        
+        try {
+            // Ищем ответ
+            const response = await phoenix.search(query);
+            
+            // Показываем результат
+            displayResponse(query, response);
+            
+            // Записываем в историю (localStorage)
+            saveToHistory(query, response);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            showError('Путь временно закрыт туманом. Попробуй переформулировать вопрос.');
+        }
+    }
+    
+    // Показать загрузку
+    function showLoading(query) {
         resultSection.innerHTML = `
             <div class="loading">
-                <h3>🦾 ИЩЕМ НЕ ОТВЕТ, А ПУТЬ...</h3>
-                <div class="spinner"></div>
-                <p>Готовим резонансный ответ специально для вас</p>
+                <div class="phoenix-animation">
+                    <div class="fire"></div>
+                    <div class="bird">🦅</div>
+                </div>
+                <h3>ПРЕВРАЩАЕМ ВОПРОС В ПУТЬ</h3>
+                <p class="query-preview">"${query}"</p>
+                <p class="loading-text">Ищем не в базе данных, а в пространстве смыслов...</p>
+                <div class="pulse"></div>
             </div>
         `;
         resultSection.style.display = 'block';
         
-        // Имитация работы с ИИ (пока без реального API)
-        setTimeout(() => {
-            generateResonanceResponse(query);
-        }, 1500);
+        // Прокручиваем к результатам
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     
-    function generateResonanceResponse(query) {
-        // Это временная функция-заглушка
-        // В реальности здесь будет вызов моего API
+    // Показать ответ
+    function displayResponse(query, response) {
+        const timestamp = new Date().toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
         
-        const responses = {
-            "призвание": {
-                essence: "Призвание — не пункт назначения, а способ путешествия. Это не то, что ты найдёшь, а то, что проявится, когда ты начнёшь действовать из своей глубинной целостности.",
-                resonance: "Какое действие, даже самое маленькое, зажигает в тебе чувство 'я на своём месте'?",
-                nextStep: "Практика 'След мастера': неделю посвяти 15 минут в день делу, которое делает тешь собой без усилий.",
-                type: "глубинный"
-            },
-            "прокрастинация": {
-                essence: "Прокрастинация — не лень, а мудрость подсознания, которое отказывается тратить энергию на то, что не резонирует с твоей истинной природой.",
-                resonance: "Что стоит за тем делом, которое ты откладываешь? Страх неудачи или признание его неважности для твоей души?",
-                nextStep: "Ритуал 'Диалог с Сопротивлением': спроси своё сопротивление, что оно пытается защитить в тебе.",
-                type: "практический"
-            },
-            "смысл": {
-                essence: "Смысл — не объект для обнаружения, а качество присутствия. Он рождается в том, как ты встречаешь каждый момент, а не в том, что ты в нём находишь.",
-                resonance: "В какой момент за последнюю неделю ты чувствовал себя полностью живым? Что происходило в тот момент?",
-                nextStep: "Практика 'Сакрализация обыденного': выбери одно рутинное действие и соверши его как священный ритуал.",
-                type: "экзистенциальный"
-            }
-        };
-        
-        // Определяем тип запроса
-        let response;
-        if (query.toLowerCase().includes("призвание")) response = responses["призвание"];
-        else if (query.toLowerCase().includes("прокрастинация")) response = responses["прокрастинация"];
-        else if (query.toLowerCase().includes("смысл")) response = responses["смысл"];
-        else {
-            // Общий ответ
-            response = {
-                essence: `Твой вопрос "${query}" касается чего-то важного. Истинный ответ всегда находится не вовне, а в том, как вопрос резонирует в твоей глубине.`,
-                resonance: "Что в этом вопросе самое живое для тебя прямо сейчас?",
-                nextStep: "Попробуй переформулировать вопрос как исследование, а не как поиск ответа.",
-                type: "исследование"
-            };
-        }
-        
-        // Отображаем ответ
         resultSection.innerHTML = `
             <div class="response">
                 <div class="response-header">
                     <span class="type-badge">${response.type}</span>
-                    <h3>🦅 СУТЬ ВОПРОСА</h3>
-                </div>
-                <div class="essence">
-                    <p>${response.essence}</p>
+                    <span class="timestamp">🕊️ ${timestamp}</span>
                 </div>
                 
-                <div class="resonance">
+                <div class="query-display">
+                    <span class="query-icon">🔍</span>
+                    <h3>${query}</h3>
+                </div>
+                
+                <div class="essence-section">
+                    <h4>🦅 СУТЬ</h4>
+                    <div class="essence-content">
+                        <p>${response.essence}</p>
+                    </div>
+                </div>
+                
+                <div class="resonance-section">
                     <h4>🔥 РЕЗОНАНС</h4>
-                    <p>${response.resonance}</p>
+                    <div class="resonance-content">
+                        <p>${response.resonance}</p>
+                    </div>
                 </div>
                 
-                <div class="next-step">
-                    <h4>🧭 СЛЕДУЮЩИЙ ШАГ</h4>
-                    <p>${response.nextStep}</p>
+                <div class="step-section">
+                    <h4>🧭 ПРАКТИКА</h4>
+                    <div class="step-content">
+                        <p>${response.step}</p>
+                    </div>
                 </div>
                 
                 <div class="actions">
-                    <button class="action-btn" onclick="this.innerHTML='🦅 Путь углубляется...'">УГЛУБИТЬ ПОИСК</button>
-                    <button class="action-btn secondary" onclick="this.innerHTML='🔥 Ритуал активирован...'">ПЕРЕЙТИ В ФЕНИКС ТАЙМ</button>
+                    <button class="action-btn deepen-btn" onclick="deepenSearch()">
+                        <span class="btn-icon">⚡</span> УГЛУБИТЬ ПОИСК
+                    </button>
+                    <button class="action-btn save-btn" onclick="saveInsight()">
+                        <span class="btn-icon">💾</span> СОХРАНИТЬ ИНСАЙТ
+                    </button>
+                    <button class="action-btn ritual-btn" onclick="goToRitual()">
+                        <span class="btn-icon">🔄</span> РИТУАЛ ФЕНИКС ТАЙМ
+                    </button>
+                </div>
+                
+                <div class="footer-note">
+                    <p>Этот ответ — начало диалога, а не его конец.</p>
                 </div>
             </div>
         `;
         
-        // Добавляем стили для ответа
-        const style = document.createElement('style');
-        style.textContent = `
-            .response-header {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                margin-bottom: 25px;
+        // Добавляем интерактивность
+        addResponseInteractions();
+    }
+    
+    // Показать ошибку
+    function showError(message) {
+        resultSection.innerHTML = `
+            <div class="error-state">
+                <div class="error-icon">🌀</div>
+                <h3>ПУТЬ ПРЕРВАЛСЯ</h3>
+                <p>${message}</p>
+                <button onclick="retrySearch()" class="retry-btn">ПОПРОБОВАТЬ СНОВА</button>
+            </div>
+        `;
+        resultSection.style.display = 'block';
+    }
+    
+    // Сохранить в историю
+    function saveToHistory(query, response) {
+        const history = JSON.parse(localStorage.getItem('phoenixHistory') || '[]');
+        history.unshift({
+            query,
+            response,
+            date: new Date().toISOString()
+        });
+        
+        // Храним только последние 50 запросов
+        if (history.length > 50) history.pop();
+        
+        localStorage.setItem('phoenixHistory', JSON.stringify(history));
+    }
+    
+    // Добавляем интерактивные функции
+    window.deepenSearch = function() {
+        const currentQuery = searchInput.value;
+        const deepenQueries = [
+            `Что стоит за моим вопросом "${currentQuery}"?`,
+            `Какой более глубокий вопрос скрывается в "${currentQuery}"?`,
+            `Если бы "${currentQuery}" был симптомом, какой была бы причина?`
+        ];
+        
+        searchInput.value = deepenQueries[Math.floor(Math.random() * deepenQueries.length)];
+        performSearch();
+    };
+    
+    window.saveInsight = function() {
+        alert('Инсайт сохранён в "Сокровищницу Феникса". Скоро здесь будет облачное хранилище.');
+        // В будущем: отправка на сервер
+    };
+    
+    window.goToRitual = function() {
+        const rituals = [
+            'Ритуал "Пробуждение Ветра"',
+            'Практика "Тень и Свет"',
+            'Медитация "Корни и Крылья"',
+            'Церемония "Сжигание Масок"'
+        ];
+        
+        const ritual = rituals[Math.floor(Math.random() * rituals.length)];
+        resultSection.innerHTML += `
+            <div class="ritual-transition">
+                <h4>🌀 ПЕРЕХОД В ${ritual.toUpperCase()}</h4>
+                <p>Готовься к погружению через 3... 2... 1...</p>
+                <div class="countdown">3</div>
+            </div>
+        `;
+        
+        // Имитация перехода
+        let count = 3;
+        const countdown = setInterval(() => {
+            count--;
+            if (count > 0) {
+                document.querySelector('.countdown').textContent = count;
+            } else {
+                clearInterval(countdown);
+                document.querySelector('.ritual-transition').innerHTML = `
+                    <p>🔄 Перенаправляем в пространство практики...</p>
+                    <p><em>Подсказка: В реальной версии здесь будет переход в приложение "Феникс Тайм"</em></p>
+                `;
+            }
+        }, 1000);
+    };
+    
+    window.retrySearch = function() {
+        searchInput.focus();
+        searchInput.select();
+    };
+    
+    // Инициализация
+    cycleExamples(); // Первый пример сразу
+    
+    // Добавляем CSS для новых элементов
+    addEnhancedStyles();
+});
+
+// Добавляем улучшенные стили
+function addEnhancedStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Анимации */
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        @keyframes fire {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        
+        /* Улучшенный loading */
+        .loading {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .phoenix-animation {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+        }
+        
+        .fire {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #ff6b35 0%, transparent 70%);
+            border-radius: 50%;
+            animation: fire 1.5s infinite;
+        }
+        
+        .bird {
+            position: absolute;
+            font-size: 50px;
+            animation: pulse 2s infinite;
+        }
+        
+        .query-preview {
+            font-style: italic;
+            color: #ff8e53;
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+        
+        .loading-text {
+            opacity: 0.8;
+            margin-top: 20px;
+        }
+        
+        .pulse {
+            width: 10px;
+            height: 10px;
+            background: #ff6b35;
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: pulse 1s infinite;
+        }
+        
+        /* Улучшенный результат */
+        .query-display {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-left: 4px solid #ff6b35;
+        }
+        
+        .query-icon {
+            font-size: 1.5em;
+        }
+        
+        .timestamp {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+        
+        .essence-section,
+        .resonance-section,
+        .step-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .essence-section:hover,
+        .resonance-section:hover,
+        .step-section:hover {
+            transform: translateY(-5px);
+        }
+        
+        .essence-section {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 209, 102, 0.1) 100%);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+        
+        .resonance-section {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+        }
+        
+        .step-section {
+            background: linear-gradient(135deg, rgba(255, 209, 102, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
+            border: 1px solid rgba(255, 209, 102, 0.3);
+        }
+        
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 30px 0;
+        }
+        
+        .action-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .deepen-btn {
+            background: linear-gradient(45deg, #ff6b35, #ff8e53);
+            color: white;
+        }
+        
+        .save-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid #ff6b35;
+        }
+        
+        .ritual-btn {
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            color: white;
+            border: 2px solid #ffd166;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.3);
+        }
+        
+        .btn-icon {
+            font-size: 1.2em;
+        }
+        
+        .footer-note {
+            text-align: center;
+            font-size: 0.9em;
+            opacity: 0.7;
+            font-style: italic;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Ошибка */
+        .error-state {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        
+        .error-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        .retry-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        /* Ритуал */
+        .ritual-transition {
+            text-align: center;
+            padding: 30px;
+            margin-top: 30px;
+            background: rgba(26, 26, 46, 0.5);
+            border-radius: 15px;
+            border: 2px dashed #ffd166;
+        }
+        
+        .countdown {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ff6b35;
+            margin: 20px;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
             }
             
-            .type-badge {
-                background: rgba(255, 107, 53, 0.2);
-                color: var(--phoenix-orange);
-                padding: 5px 15px;
-                border-radius: 20px;
-                font-size: 0.9rem;
-            }
-            
-            .essence {
-                font-size: 1.2rem;
-                margin-bottom: 30px;
-                padding-left: 10px;
-                border-left: 3px solid var(--phoenix-orange);
-            }
-            
-            .resonance, .next-step {
-                background: rgba(255, 209, 102, 0.1);
-                padding: 20px;
-                border-radius: 12px;
-                margin-bottom: 20px;
-                border: 1px solid rgba(255, 209, 102, 0.2);
-            }
-            
-            .resonance h4, .next-step h4 {
-                color: var(--phoenix-gold);
-                margin-bottom: 10px;
+            #searchBtn {
+                width: 100%;
             }
             
             .actions {
-                display: flex;
-                gap: 15px;
-                margin-top: 30px;
+                flex-direction: column;
             }
             
             .action-btn {
-                flex: 1;
-                padding: 15px;
-                background: linear-gradient(45deg, var(--phoenix-orange), #ff8e53);
-                color: white;
-                border: none;
-                border-radius: 10px;
-                cursor: pointer;
-                font-weight: bold;
-                transition: transform 0.3s ease;
+                width: 100%;
             }
             
-            .action-btn.secondary {
-                background: transparent;
-                border: 2px solid var(--phoenix-orange);
+            h1 {
+                font-size: 2.2rem;
             }
-            
-            .action-btn:hover {
-                transform: translateY(-2px);
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Добавляем класс PhoenixSearch (заглушка)
+class PhoenixSearch {
+    async search(query) {
+        // Временная заглушка
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        const responses = [
+            {
+                essence: "Твой вопрос — не дыра в знании, а приглашение к росту. Ответы приходят не извне, а из глубины твоего собственного вопрошающего присутствия.",
+                resonance: "Если бы твой вопрос был проводником, куда бы он тебя привёл?",
+                step: "Практика 'Вопрошающее молчание': 7 минут просто быть с вопросом без поиска ответа.",
+                type: "философский"
+            },
+            {
+                essence: "Информация питает ум, смыслы питают душу. Ты ищешь не данные, а переживание истины, которое изменит твой способ бытия.",
+                resonance: "Какой частью себя ты задаёшь этот вопрос?",
+                step: "Ритуал 'Три дыхания': на вдохе — вопрос, на задержке — тишина, на выдохе — доверие.",
+                type: "интуитивный"
+            },
+            {
+                essence: "Внешние ответы — это карты чужого путешествия. Твой путь уникален, и его карта рисуется только в движении.",
+                resonance: "Что изменится, если ты не получишь ответ, а станешь им?",
+                step: "Медитация 'Воплощение': представь, что ты уже являешься живым ответом на свой вопрос.",
+                type: "практический"
             }
-            
-            .loading {
-                text-align: center;
-                padding: 40px;
-            }
-            
-            .spinner {
-                width: 50px;
-                height: 50px;
-                border: 3px solid rgba(255, 107, 53, 0.3);
-                border-top-color: var(--phoenix-orange);
-                border-radius: 50%;
-                margin: 20px auto;
-                animation: spin 1s linear infinite;
-            }
-            
-            @keyframes spin {
-                to { transform: rotate(360deg); }
-            }
-        `;
-        resultSection.appendChild(style);
+        ];
+        
+        return responses[Math.floor(Math.random() * responses.length)];
     }
-});
+}
