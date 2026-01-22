@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h2>🧪 Простой тест</h2>
+  <button onclick="test()">Тест API</button>
+  <pre id="result" style="background:#f0f0f0;padding:10px;"></pre>
+  
+  <script src="phoenix.js"></script>
+  <script>
+  async function test() {
+    const result = document.getElementById('result');
+    result.textContent = 'Тестирую...\n';
+    
+    // 1. Проверяем класс
+    if (typeof PhoenixSearch === 'undefined') {
+      result.textContent += '❌ PhoenixSearch не загружен\n';
+      return;
+    }
+    result.textContent += '✅ Класс загружен\n';
+    
+    // 2. Тестируем API напрямую
+    try {
+      const response = await fetch('https://phoenix-search-prototype.vercel.app/api/search', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({query: 'тест'})
+      });
+      
+      result.textContent += `✅ API статус: ${response.status}\n`;
+      
+      const text = await response.text();
+      result.textContent += `📦 Ответ: ${text.substring(0, 200)}...\n`;
+      
+    } catch (err) {
+      result.textContent += `❌ Ошибка API: ${err.message}\n`;
+    }
+    
+    // 3. Тестируем класс
+    try {
+      const phoenix = new PhoenixSearch();
+      const searchResult = await phoenix.search('тест класса');
+      
+      result.textContent += `✅ Класс работает! Тип: ${searchResult.type}\n`;
+      
+    } catch (err) {
+      result.textContent += `❌ Ошибка класса: ${err.message}\n`;
+    }
+  }
+  </script>
+</body>
+</html>
