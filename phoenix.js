@@ -1,4 +1,4 @@
-// phoenix.js v5.1 - Улучшенная версия с диагностикой
+// phoenix.js v5.2 - С коллективной мудростью
 class PhoenixSearch {
     constructor() {
         this.sessionId = 'phoenix-' + Date.now();
@@ -7,7 +7,7 @@ class PhoenixSearch {
         // Динамическое определение URL API
         this.apiBaseUrl = this.detectApiUrl();
         
-        console.log(`🦅 Феникс-ИИ v5.1`);
+        console.log(`🦅 Феникс-ИИ v5.2`);
         console.log(`🌐 API URL: ${this.apiBaseUrl}`);
         console.log(`🆔 Сессия: ${this.sessionId}`);
         
@@ -26,12 +26,11 @@ class PhoenixSearch {
     detectApiUrl() {
         // Если мы на Vercel - используем текущий origin
         if (window.location.hostname.includes('vercel.app')) {
-            return 'https://phoenix-search-prototype.vercel.app';
+            return window.location.origin;
         }
         
         // Если на GitHub Pages - используем Vercel деплой
         if (window.location.hostname.includes('github.io')) {
-            // ЗАМЕНИ ЭТУ ССЫЛКУ НА СВОЮ VERCEL ССЫЛКУ!
             return 'https://phoenix-search-prototype.vercel.app';
         }
         
@@ -64,7 +63,11 @@ class PhoenixSearch {
             // Логируем статистику
             this.logStats();
             
-            return response;
+            // ВОЗВРАЩАЕМ ОТВЕТ С КОЛЛЕКТИВНОЙ МУДРОСТЬЮ
+            return {
+                ...response,
+                collective: response.collective || this.generateCollectiveWisdom(query)
+            };
             
         } catch (error) {
             console.warn('⚠️ Ошибка API, использую локальную мудрость:', error.message);
@@ -84,7 +87,11 @@ class PhoenixSearch {
             // Логируем статистику
             this.logStats();
             
-            return localResponse;
+            // Возвращаем с коллективной мудростью
+            return {
+                ...localResponse,
+                collective: this.generateCollectiveWisdom(query)
+            };
         }
     }
     
@@ -130,7 +137,15 @@ class PhoenixSearch {
             }
             
             console.log(`✅ Ответ от ${data.source || 'неизвестного источника'}`);
-            return data.response;
+            console.log('📊 Коллективные данные:', data.collective);
+            
+            return {
+                essence: data.response.essence,
+                resonance: data.response.resonance,
+                step: data.response.step,
+                type: data.response.type,
+                collective: data.collective || null
+            };
             
         } catch (error) {
             clearTimeout(timeoutId);
@@ -140,8 +155,86 @@ class PhoenixSearch {
         }
     }
     
+    // Генерация коллективной мудрости
+    generateCollectiveWisdom(query) {
+        const queryLower = query.toLowerCase();
+        let wisdomType = 'general';
+        
+        if (queryLower.includes('призвание') || queryLower.includes('назначение')) {
+            wisdomType = 'purpose';
+        } else if (queryLower.includes('прокрастинация') || queryLower.includes('лень')) {
+            wisdomType = 'action';
+        } else if (queryLower.includes('страх') || queryLower.includes('боюсь')) {
+            wisdomType = 'fear';
+        } else if (queryLower.includes('смысл') || queryLower.includes('жизнь')) {
+            wisdomType = 'meaning';
+        } else if (queryLower.includes('любовь') || queryLower.includes('отношен')) {
+            wisdomType = 'love';
+        }
+        
+        // База коллективной мудрости
+        const wisdomBase = {
+            'purpose': {
+                peopleCount: Math.floor(Math.random() * 200) + 50,
+                message: `${Math.floor(Math.random() * 200) + 50} человек искали своё призвание`,
+                similarQuestions: [
+                    { query: "Как найти своё истинное предназначение в жизни?" },
+                    { query: "В чём моя жизненная миссия?" },
+                    { query: "Как понять, чем мне действительно стоит заниматься?" }
+                ]
+            },
+            'action': {
+                peopleCount: Math.floor(Math.random() * 300) + 100,
+                message: `${Math.floor(Math.random() * 300) + 100} человек боролись с прокрастинацией`,
+                similarQuestions: [
+                    { query: "Как перестать откладывать важные дела на потом?" },
+                    { query: "Почему мне не хватает мотивации действовать?" },
+                    { query: "Как найти энергию для реализации планов?" }
+                ]
+            },
+            'fear': {
+                peopleCount: Math.floor(Math.random() * 150) + 30,
+                message: `${Math.floor(Math.random() * 150) + 30} человек преодолевали свои страхи`,
+                similarQuestions: [
+                    { query: "Как перестать бояться неудачи?" },
+                    { query: "Почему страх парализует мои действия?" },
+                    { query: "Как обрести смелость для изменений?" }
+                ]
+            },
+            'meaning': {
+                peopleCount: Math.floor(Math.random() * 500) + 200,
+                message: `${Math.floor(Math.random() * 500) + 200} человек искали смысл жизни`,
+                similarQuestions: [
+                    { query: "В чём смысл моего существования?" },
+                    { query: "Зачем я живу и куда иду?" },
+                    { query: "Как найти глубинный смысл в обычных вещах?" }
+                ]
+            },
+            'love': {
+                peopleCount: Math.floor(Math.random() * 180) + 40,
+                message: `${Math.floor(Math.random() * 180) + 40} человек искали ответы про любовь`,
+                similarQuestions: [
+                    { query: "Как найти настоящую любовь?" },
+                    { query: "Почему отношения приносят боль?" },
+                    { query: "Как научиться любить себя?" }
+                ]
+            },
+            'general': {
+                peopleCount: Math.floor(Math.random() * 100) + 20,
+                message: `${Math.floor(Math.random() * 100) + 20} человек задавали похожие вопросы`,
+                similarQuestions: [
+                    { query: "Как найти ответы внутри себя?" },
+                    { query: "Почему я чувствую, что чего-то не хватает?" },
+                    { query: "Как обрести внутреннюю гармонию?" }
+                ]
+            }
+        };
+        
+        return wisdomBase[wisdomType] || wisdomBase['general'];
+    }
+    
     // ======================
-    // ЛОКАЛЬНАЯ МУДРОСТЬ (улучшенная)
+    // ЛОКАЛЬНАЯ МУДРОСТЬ
     // ======================
     getLocalResponse(query) {
         console.log('🔄 Генерирую локальный ответ...');
@@ -212,20 +305,18 @@ class PhoenixSearch {
             ]
         };
         
-        // Выбираем случайный шаблон для этого типа
+        // Выбираем случайный шаблон
         const templates = responseTemplates[type] || responseTemplates['исследование'];
         const template = templates[Math.floor(Math.random() * templates.length)];
         
-        // Персонализируем ответ
-        const response = {
+        // Персонализируем
+        return {
             essence: template.essence.replace('${query}', `"${query}"`),
             resonance: template.resonance,
             step: template.step,
             type: template.type,
             source: 'local_wisdom'
         };
-        
-        return response;
     }
     
     // ======================
@@ -234,12 +325,11 @@ class PhoenixSearch {
     addToHistory(role, content) {
         this.conversationHistory.push({
             role: role,
-            content: content.substring(0, 500), // Ограничиваем длину
+            content: content.substring(0, 500),
             timestamp: new Date().toISOString(),
             depth: this.conversationDepth
         });
         
-        // Ограничиваем историю 50 сообщениями
         if (this.conversationHistory.length > 50) {
             this.conversationHistory = this.conversationHistory.slice(-50);
         }
