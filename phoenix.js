@@ -10,25 +10,30 @@ class PhoenixSearch {
         console.log(`🦅 Феникс-ИИ инициализирован (сессия: ${this.sessionId})`);
     }
     
-    async search(query) {
-        this.conversationDepth++;
-        console.log(`🔍 Глубина диалога: ${this.conversationDepth}, Запрос: "${query}"`);
+    async realSearch(query) {
+    try {
+        const response = await fetch('/api/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                query, 
+                context: this.getUserContext() 
+            })
+        });
         
-        // Определяем тип запроса
-        const analysis = this.analyzeQuery(query);
-        this.lastQueryType = analysis.type;
+        const data = await response.json();
         
-        // Генерируем ответ на основе анализа
-        const response = this.generateResponse(query, analysis);
-        
-        // Добавляем вариативность для "живого" ощущения
-        response.essence = this.addWisdomVariations(response.essence);
-        
-        // Логируем для отладки
-        console.log('📤 Ответ ИИ:', response);
-        
-        return response;
+        if (data.success) {
+            return data.response;
+        } else {
+            // Возвращаем fallback
+            return this.generateResponse(query);
+        }
+    } catch (error) {
+        console.log('Использую локальную мудрость:', error);
+        return this.generateResponse(query);
     }
+}
     
     analyzeQuery(query) {
         const queryLower = query.toLowerCase();
