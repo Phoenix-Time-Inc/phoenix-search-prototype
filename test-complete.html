@@ -1,0 +1,17 @@
+<script>
+// Тест 1: API Search
+fetch('https://phoenix-search-prototype.vercel.app/api/search', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({query: 'Тест коллективной мудрости'})
+})
+.then(r => r.json())
+.then(data => {
+  console.log('✅ Search API:', data.success, 'Collective:', data.collective?.peopleCount);
+});
+
+// Тест 2: PhoenixSearch класс
+const phoenix = new PhoenixSearch();
+phoenix.search('Как найти путь?')
+  .then(res => console.log('✅ PhoenixSearch:', res.type, 'Collective:', res.collective?.peopleCount));
+</script>
