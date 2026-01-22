@@ -26,7 +26,7 @@ class PhoenixSearch {
     detectApiUrl() {
         // Если мы на Vercel - используем текущий origin
         if (window.location.hostname.includes('vercel.app')) {
-            return window.location.origin;
+            return 'https://phoenix-search-prototype.vercel.app';
         }
         
         // Если на GitHub Pages - используем Vercel деплой
