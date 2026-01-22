@@ -1,3 +1,41 @@
+// ДЕБАГ-ФУНКЦИЯ: Проверяем видимость элементов
+function debugElements() {
+    console.log("🛠️ ДЕБАГ СТАРТ");
+    console.log("Поисковое поле:", document.getElementById('searchInput'));
+    console.log("Кнопка поиска:", document.getElementById('searchBtn'));
+    console.log("Блок результата:", document.getElementById('resultSection'));
+    console.log("Виден ли блок результата:", document.getElementById('resultSection')?.style.display);
+    console.log("Высота блока:", document.getElementById('resultSection')?.offsetHeight);
+    console.log("🛠️ ДЕБАГ КОНЕЦ");
+}
+
+// Запускаем при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("🔥 ФЕНИКС-ПОИСК ЗАГРУЖЕН");
+    debugElements();
+    
+    // Добавляем кнопку дебага в интерфейс (только на десктопе)
+    if (window.innerWidth > 768) {
+        const debugBtn = document.createElement('button');
+        debugBtn.innerHTML = '🐛 Дебаг';
+        debugBtn.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+            opacity: 0.7;
+        `;
+        debugBtn.onclick = debugElements;
+        document.body.appendChild(debugBtn);
+    }
+});
+
 // app.js - Упрощённая рабочая версия
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
