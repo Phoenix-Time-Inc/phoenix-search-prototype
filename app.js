@@ -254,7 +254,108 @@ function showResponse(query, response) {
             </div>
         `;
     }
+
+    // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ БЕЗОПАСНОГО ОТОБРАЖЕНИЯ
+
+// Экранирование HTML для безопасности
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Привязка обработчиков кнопок в ответе
+function bindResponseButtons() {
+    // Кнопка "Углубить"
+    document.querySelectorAll('.deepen-action').forEach(btn => {
+        btn.onclick = function() {
+            const query = this.getAttribute('data-query');
+            const deepenVariants = [
+                `Раскрой суть вопроса "${query}" еще глубже`,
+                `Что является корневой причиной вопроса "${query}"?`,
+                `Как ${query} связано с моей жизненной миссией?`
+            ];
+            const newQuery = deepenVariants[Math.floor(Math.random() * deepenVariants.length)];
+            searchInput.value = newQuery;
+            performSearch(newQuery);
+        };
+    });
     
+    // Кнопка "Сохранить"
+    document.querySelectorAll('.save-action').forEach(btn => {
+        btn.onclick = function() {
+            const query = this.getAttribute('data-query');
+            const essence = this.getAttribute('data-essence');
+            alert(`💾 Сохранено в "Сокровищницу Феникса":\n\nВопрос: ${query}\n\nСуть: ${essence}...`);
+        };
+    });
+    
+    // Кнопка "Ритуал"
+    document.querySelectorAll('.ritual-action').forEach(btn => {
+        btn.onclick = function() {
+            const type = this.getAttribute('data-type');
+            startRitual(type);
+        };
+    });
+}
+
+// Функция запуска ритуала
+function startRitual(type) {
+    const rituals = {
+        'глубинный': '🌀 Ритуал "Погружение в Суть"',
+        'практический': '🛠️ Практика "Воплощение Действия"',
+        'эмоциональный': '💖 Церемония "Исцеление Сердца"',
+        'философский': '🧠 Медитация "Бесконечность Вопроса"',
+        'исследование': '🔍 Практика "Картография Смыслов"'
+    };
+    
+    const ritual = rituals[type] || '🌀 Базовая практика осознанности';
+    
+    // Показываем активацию
+    const ritualHTML = `
+        <div class="ritual-activation" style="margin-top: 30px; padding: 25px; background: rgba(26,26,46,0.9); border-radius: 15px; border: 2px solid #ffd166; text-align: center;">
+            <div class="ritual-header">
+                <span class="ritual-icon" style="font-size: 2em;">🔥</span>
+                <h4 style="margin: 10px 0;">АКТИВАЦИЯ РИТУАЛА</h4>
+            </div>
+            <p>Запускаю <strong>${ritual}</strong>...</p>
+            <div class="countdown" style="font-size: 3em; font-weight: bold; color: #ff6b35; margin: 20px 0;">3</div>
+            <p class="ritual-instruction" style="opacity: 0.8;">Закрой глаза и следи за дыханием. Ритуал начнётся через:</p>
+        </div>
+    `;
+    
+    // Добавляем к текущему ответу
+    responseContainer.insertAdjacentHTML('beforeend', ritualHTML);
+    
+    // Анимация обратного отсчёта
+    let count = 3;
+    const countdownEl = responseContainer.querySelector('.countdown');
+    const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+            countdownEl.textContent = count;
+        } else {
+            clearInterval(interval);
+            document.querySelector('.ritual-activation').innerHTML = `
+                <div style="text-align:center; padding:20px;">
+                    <span style="font-size:2em;">🌀</span><br>
+                    <strong>Ритуал активирован</strong><br>
+                    <em>Продолжай в пространстве Феникс-Тайм</em><br><br>
+                    <button onclick="continueSearch()" style="background:#ff6b35; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">
+                        Вернуться к поиску
+                    </button>
+                </div>
+            `;
+        }
+    }, 1000);
+}
+
+// Функция возврата к поиску
+window.continueSearch = function() {
+    document.querySelector('.ritual-activation').remove();
+    searchInput.focus();
+};
     // ====================
     // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
     // ====================
