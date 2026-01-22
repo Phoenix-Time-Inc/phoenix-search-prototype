@@ -206,3 +206,33 @@ footer {
         min-height: 450px;
     }
 }
+
+/* Исправление для видимости текста */
+.essence-content p,
+.resonance-content p,
+.step-content p {
+    color: #f0f0f0 !important;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Убедимся, что текст не сливается с фоном */
+.response {
+    color: #f0f0f0;
+}
+
+/* Белый текст в результатах */
+.result-section * {
+    color: #f0f0f0;
+}
+
+/* Особо для заголовков */
+.result-section h3,
+.result-section h4 {
+    color: #ffd166 !important;
+}
+
+/* Для кнопок внутри результатов */
+.result-section .action-btn {
+    color: white !important;
+}
