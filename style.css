@@ -236,3 +236,22 @@ footer {
 .result-section .action-btn {
     color: white !important;
 }
+
+/* Добавь в style.css этот "живой" градиент */
+.phoenix-gradient {
+    background: linear-gradient(
+        45deg, 
+        #ff6b35 0%,    /* Огонь Феникса */
+        transparent 25%, 
+        #1a1a2e 50%,    /* Глубина космоса */
+        transparent 75%, 
+        #ffd166 100%    /* Золото пробуждения */
+    );
+    background-size: 400% 400%;
+    animation: phoenix-pulse 15s ease infinite;
+}
+
+@keyframes phoenix-pulse {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
