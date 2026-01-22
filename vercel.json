@@ -1,8 +1,6 @@
 {
   "functions": {
     "api/search.js": {
-      "maxDuration": 10,
-      "memory": 1024,
       "runtime": "nodejs24.x"
     }
   },
@@ -12,7 +10,14 @@
       "destination": "/api/$1"
     }
   ],
-  "buildCommand": "echo 'Build completed successfully'",
-  "outputDirectory": ".",
-  "installCommand": "echo 'Skipping install'"
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "**/*.html",
+      "use": "@vercel/static"
+    }
+  ]
 }
