@@ -2,7 +2,8 @@
   "functions": {
     "api/search.js": {
       "maxDuration": 10,
-      "memory": 1024
+      "memory": 1024,
+      "runtime": "nodejs24.x"
     }
   },
   "rewrites": [
@@ -10,5 +11,8 @@
       "source": "/api/(.*)",
       "destination": "/api/$1"
     }
-  ]
+  ],
+  "buildCommand": "echo 'Build completed successfully'",
+  "outputDirectory": ".",
+  "installCommand": "echo 'Skipping install'"
 }
