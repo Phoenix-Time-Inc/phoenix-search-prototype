@@ -1,0 +1,34 @@
+<script>
+async function checkAPI() {
+    console.log('🔍 Проверяю API...');
+    
+    try {
+        const start = Date.now();
+        const response = await fetch('https://phoenix-search-prototype.vercel.app/api/search', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({query: 'проверка'})
+        });
+        const time = Date.now() - start;
+        
+        console.log(`⏱️ Время: ${time}ms`);
+        console.log(`📊 Статус: ${response.status} ${response.statusText}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ API работает!', data);
+            alert(`✅ API работает!\nВремя: ${time}ms\nТип: ${data.response.type}`);
+        } else {
+            console.log('❌ API ошибка:', response.status);
+            alert(`❌ API ошибка: ${response.status}`);
+        }
+        
+    } catch (error) {
+        console.error('💥 Ошибка сети:', error);
+        alert(`💥 Ошибка сети: ${error.message}`);
+    }
+}
+
+// Запускаем автоматически
+checkAPI();
+</script>
