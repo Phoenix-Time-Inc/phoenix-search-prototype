@@ -84,85 +84,132 @@ document.addEventListener('DOMContentLoaded', function() {
         animateSearchSteps();
     }
     
-    // 3. ПОКАЗ ОТВЕТА
-    function showResponse(query, response) {
-        const timestamp = new Date().toLocaleTimeString('ru-RU', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        
-        responseContainer.innerHTML = `
-            <div class="response-view">
-                <div class="response-header">
-                    <span class="response-type ${response.type}">${getTypeIcon(response.type)} ${response.type.toUpperCase()}</span>
-                    <span class="response-time">🕊️ ${timestamp}</span>
+// 3. ПОКАЗ ОТВЕТА - ИСПРАВЛЕННАЯ ВЕРСИЯ
+function showResponse(query, response) {
+    console.log('🦅 Показываю ответ:', { query, response });
+    
+    const timestamp = new Date().toLocaleTimeString('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // ОЧЕНЬ ВАЖНО: Убедись, что responseContainer есть и видим
+    if (!responseContainer) {
+        console.error('❌ responseContainer не найден!');
+        responseContainer = document.getElementById('responseContainer');
+        if (!responseContainer) {
+            // Создаём контейнер, если его нет (экстренный фикс)
+            responseContainer = document.createElement('div');
+            responseContainer.id = 'responseContainer';
+            resultSection.appendChild(responseContainer);
+        }
+    }
+    
+    // Гарантируем видимость
+    responseContainer.style.cssText = `
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        position: relative !important;
+        z-index: 100 !important;
+    `;
+    
+    // Очищаем и показываем
+    responseContainer.innerHTML = '';
+    
+    const responseHTML = `
+        <div class="response-view" style="opacity: 0; transform: translateY(10px);">
+            <div class="response-header">
+                <span class="response-type ${response.type}">
+                    ${getTypeIcon(response.type)} ${response.type ? response.type.toUpperCase() : 'ОТВЕТ'}
+                </span>
+                <span class="response-time">🕊️ ${timestamp}</span>
+            </div>
+            
+            <div class="original-query">
+                <div class="query-icon">🎯</div>
+                <div class="query-text">${escapeHtml(query)}</div>
+            </div>
+            
+            <div class="response-sections">
+                <div class="section essence-section">
+                    <div class="section-header">
+                        <span class="section-icon">🦅</span>
+                        <h4>СУТЬ</h4>
+                    </div>
+                    <div class="section-content">
+                        <p>${escapeHtml(response.essence || 'Ответ формируется...')}</p>
+                    </div>
                 </div>
                 
-                <div class="original-query">
-                    <div class="query-icon">🎯</div>
-                    <div class="query-text">${query}</div>
+                <div class="section resonance-section">
+                    <div class="section-header">
+                        <span class="section-icon">🔥</span>
+                        <h4>РЕЗОНАНС</h4>
+                    </div>
+                    <div class="section-content">
+                        <p><em>${escapeHtml(response.resonance || 'Что этот вопрос открывает в тебе?')}</em></p>
+                    </div>
                 </div>
                 
-                <div class="response-sections">
-                    <div class="section essence-section">
-                        <div class="section-header">
-                            <span class="section-icon">🦅</span>
-                            <h4>СУТЬ</h4>
-                        </div>
-                        <div class="section-content">
-                            <p>${response.essence}</p>
+                <div class="section practice-section">
+                    <div class="section-header">
+                        <span class="section-icon">🧭</span>
+                        <h4>ПРАКТИКА</h4>
+                    </div>
+                    <div class="section-content">
+                        <p>${escapeHtml(response.step || 'Сделай паузу на 3 дыхания и почувствуй, куда ведёт тебя этот вопрос.')}</p>
+                        <div class="practice-timer">
+                            <span class="timer-icon">⏳</span>
+                            <span>5-10 минут</span>
                         </div>
                     </div>
-                    
-                    <div class="section resonance-section">
-                        <div class="section-header">
-                            <span class="section-icon">🔥</span>
-                            <h4>РЕЗОНАНС</h4>
-                        </div>
-                        <div class="section-content">
-                            <p><em>${response.resonance}</em></p>
-                        </div>
-                    </div>
-                    
-                    <div class="section practice-section">
-                        <div class="section-header">
-                            <span class="section-icon">🧭</span>
-                            <h4>ПРАКТИКА</h4>
-                        </div>
-                        <div class="section-content">
-                            <p>${response.step}</p>
-                            <div class="practice-timer">
-                                <span class="timer-icon">⏳</span>
-                                <span>5-10 минут</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="response-actions">
-                    <button class="action-btn deepen-action" onclick="deepenQuestion('${query.replace(/'/g, "\\'")}')">
-                        <span class="action-icon">⚡</span> УГЛУБИТЬ
-                    </button>
-                    <button class="action-btn save-action" onclick="saveResponse('${query.replace(/'/g, "\\'")}', '${response.essence.substring(0, 50).replace(/'/g, "\\'")}')">
-                        <span class="action-icon">💾</span> СОХРАНИТЬ
-                    </button>
-                    <button class="action-btn ritual-action" onclick="startRitual('${response.type}')">
-                        <span class="action-icon">🌀</span> РИТУАЛ
-                    </button>
-                </div>
-                
-                <div class="response-footer">
-                    <p class="insight-note">Этот ответ — начало диалога, а не его конец.</p>
                 </div>
             </div>
-        `;
-        
-        // Добавляем плавное появление
-        setTimeout(() => {
-            responseContainer.style.opacity = '1';
-            responseContainer.style.transform = 'translateY(0)';
-        }, 50);
-    }
+            
+            <div class="response-actions">
+                <button class="action-btn deepen-action" data-query="${escapeHtml(query)}">
+                    <span class="action-icon">⚡</span> УГЛУБИТЬ
+                </button>
+                <button class="action-btn save-action" data-query="${escapeHtml(query)}" data-essence="${escapeHtml(response.essence || '').substring(0, 50)}">
+                    <span class="action-icon">💾</span> СОХРАНИТЬ
+                </button>
+                <button class="action-btn ritual-action" data-type="${response.type || 'глубинный'}">
+                    <span class="action-icon">🌀</span> РИТУАЛ
+                </button>
+            </div>
+            
+            <div class="response-footer">
+                <p class="insight-note">Этот ответ — начало диалога, а не его конец.</p>
+            </div>
+        </div>
+    `;
+    
+    responseContainer.innerHTML = responseHTML;
+    
+    // Плавное появление
+    setTimeout(() => {
+        const responseView = responseContainer.querySelector('.response-view');
+        if (responseView) {
+            responseView.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            responseView.style.opacity = '1';
+            responseView.style.transform = 'translateY(0)';
+        }
+    }, 50);
+    
+    // Привязываем обработчики кнопок
+    bindResponseButtons();
+    
+    // Прокручиваем к результату
+    setTimeout(() => {
+        resultSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+    }, 300);
+    
+    console.log('✅ Ответ отображён');
+}
     
     // 4. ПРЕДЛОЖЕНИЕ СЛЕДУЮЩЕГО ВОПРОСА
     function suggestNextQuestion(originalQuery, response) {
