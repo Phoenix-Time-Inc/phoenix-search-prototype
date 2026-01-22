@@ -1,0 +1,10 @@
+{
+  "buildCommand": "echo 'Static files ready'",
+  "outputDirectory": ".",
+  "functions": {
+    "api/search.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
+}
