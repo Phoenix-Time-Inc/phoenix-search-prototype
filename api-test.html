@@ -1,0 +1,39 @@
+<script>
+async function testAPI() {
+    const result = document.getElementById('result') || document.body;
+    
+    try {
+        const response = await fetch('https://phoenix-search-prototype.vercel.app/api/search', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({query: 'Проверка связи'})
+        });
+        
+        const data = await response.json();
+        
+        result.innerHTML = `
+            <div style="background:${response.ok ? '#d4edda' : '#f8d7da'}; padding:20px; border-radius:10px;">
+                <h3>${response.ok ? '✅ API РАБОТАЕТ!' : '❌ API ОШИБКА'}</h3>
+                <p>Статус: <strong>${response.status} ${response.statusText}</strong></p>
+                <p>Источник: ${data.source || 'не указан'}</p>
+                <p>Сообщение: ${data.response?.essence || data.error}</p>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            </div>
+        `;
+        
+    } catch(error) {
+        result.innerHTML = `
+            <div style="background:#f8d7da; padding:20px; border-radius:10px;">
+                <h3>💥 КРИТИЧЕСКАЯ ОШИБКА</h3>
+                <p>${error.message}</p>
+                <p>Проверьте консоль (F12) для деталей</p>
+            </div>
+        `;
+        console.error('Ошибка теста:', error);
+    }
+}
+
+// Запускаем автоматически
+testAPI();
+</script>
+<div id="result">Тестируем API...</div>
