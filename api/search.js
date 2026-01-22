@@ -23,21 +23,39 @@ export default async function handler(req, res) {
     }
     
     // 4. ПАРСИМ ТЕЛО (ПРАВИЛЬНО ДЛЯ VERCEL)
-    let body = {};
     let query = 'тест';
     
     try {
         // Вариант 1: Если body уже объект (Vercel иногда парсит автоматически)
         if (typeof req.body === 'object' && req.body !== null) {
-            body = req.body;
+            console.log('📦 Body уже объект:', req.body);
+            query = req.body.query || 'тест';
         } 
         // Вариант 2: Если body строка - парсим JSON
-        else if (typeof req.body === 'string') {
-            body = JSON.parse(req.body);
+        else if (typeof req.body === 'string' && req.body.length > 0) {
+            console.log('📦 Body строка:', req.body);
+            const parsedBody = JSON.parse(req.body);
+            query = parsedBody.query || 'тест';
         }
-        
-        query = body.query || 'тест';
-        console.log('📦 Тело запроса:', { query, body });
+        // Вариант 3: Правильный способ для Vercel - через req.json()
+        else {
+            try {
+                // Сначала попробуем прочитать как поток
+                const bodyText = await new Promise((resolve) => {
+                    let data = '';
+                    req.on('data', chunk => data += chunk);
+                    req.on('end', () => resolve(data));
+                });
+                
+                if (bodyText) {
+                    const parsed = JSON.parse(bodyText);
+                    query = parsed.query || 'тест';
+                    console.log('📦 Прочитано из потока:', { query });
+                }
+            } catch(streamError) {
+                console.log('⚠️ Не удалось прочитать поток:', streamError.message);
+            }
+        }
         
     } catch(e) {
         console.log('⚠️ Ошибка парсинга тела:', e.message);
