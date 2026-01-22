@@ -56,3 +56,15 @@ ${JSON.stringify(data, null, 2)}
     </script>
 </body>
 </html>
+
+// Проверка всех компонентов
+fetch('https://phoenix-search-prototype.vercel.app/api/search', {
+  method: 'POST',
+  body: JSON.stringify({query: 'Тест системы'})
+})
+.then(r => r.json())
+.then(data => {
+  console.log('✅ API работает:', data.success);
+  console.log('🌍 Коллективная мудрость:', data.collective?.peopleCount, 'человек');
+  console.log('🦅 Источник:', data.source);
+});
