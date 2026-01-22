@@ -2,7 +2,17 @@
   "name": "phoenix-search-prototype",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "echo 'No dev server needed for Vercel'",
+    "build": "echo 'Build completed'",
+    "start": "echo 'Serverless functions run on Vercel'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@vercel/node": "^4.0.0"
   }
 }
