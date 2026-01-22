@@ -175,7 +175,7 @@ class PhoenixSearch {
         // База коллективной мудрости
         const wisdomBase = {
             'purpose': {
-                peopleCount: Math.floor(Math.random() * 200) + 50,
+                collective: data.collective || this.generateCollectiveWisdom(query)
                 message: `${Math.floor(Math.random() * 200) + 50} человек искали своё призвание`,
                 similarQuestions: [
                     { query: "Как найти своё истинное предназначение в жизни?" },
