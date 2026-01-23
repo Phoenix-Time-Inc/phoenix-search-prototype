@@ -923,3 +923,41 @@ if (document.readyState === 'loading') {
 } else {
     injectStyles();
 }
+
+// ========= НАЧАЛО ВСТАВКИ В app.js =========
+// Тестовая функция для проверки API
+async function testPhoenixAPI() {
+    const testQuery = 'призвание';
+    console.log('🧪 Тестирую API с запросом:', testQuery);
+    
+    try {
+        const response = await fetch('/api/search', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({query: testQuery})
+        });
+        
+        const data = await response.json();
+        console.log('📊 Результат теста:', data);
+        
+        if (data.success) {
+            console.log('🎉 API работает! Ответ:', data.answer);
+            return true;
+        } else {
+            console.log('⚠️ API ответил с ошибкой');
+            return false;
+        }
+    } catch (error) {
+        console.error('🔥 Ошибка теста API:', error);
+        return false;
+    }
+}
+
+// Автоматический тест при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        console.log('🔄 Запускаю автоматический тест API...');
+        testPhoenixAPI();
+    }, 2000);
+});
+// ========= КОНЕЦ ВСТАВКИ =========
