@@ -1,66 +1,85 @@
-// ============= НАЧАЛО ФАЙЛА api/search.js =============
+// api/search.js - с эмоциональным тегированием
+import { analyzeEmotionalProfile } from './emotional-tags.js';
+
+// Загружаем базу мудрости
+import wisdomDB from './wisdom.json' assert { type: 'json' };
+
 export default async function handler(req, res) {
-    // Включаем CORS
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    
-    // Обрабатываем OPTIONS запрос
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  // OPTIONS
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  
+  // Только POST
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Только POST' });
+  }
+  
+  let query = 'тест';
+  
+  try {
+    if (req.body) {
+      const body = typeof req.body === 'string' 
+        ? JSON.parse(req.body) 
+        : req.body;
+      query = body.query || query;
     }
-    
-    // Только POST запросы
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Только POST' });
-    }
-    
-    let query = 'тест';
-    
-    try {
-        // Чтение тела запроса
-        if (req.body) {
-            const body = typeof req.body === 'string' 
-                ? JSON.parse(req.body) 
-                : req.body;
-            query = body.query || query;
-        }
-    } catch(e) {
-        console.log('Ошибка парсинга:', e.message);
-    }
-    
-    // ВРЕМЕННАЯ БАЗА МУДРОСТИ (прямо в коде)
-    const wisdomDB = {
-        "призвание": "Находится в точке пересечения таланта и служения.",
-        "страх": "Страх указывает на важность, а не на опасность.",
-        "одиночество": "Пространство для диалога с глубиной себя.",
-        "смысл жизни": "Смысл жизни — в создании смыслов.",
-        "успех": "Успех — это движение от одной неудачи к другой без потери энтузиазма.",
-        "любовь": "Любовь — это не чувство, а действие.",
-        "счастье": "Счастье — это побочный продукт осмысленной жизни.",
-        "тревога": "Тревога — это ум, который пытается контролировать то, что не в его власти.",
-        "доверие": "Доверие — это риск, на который идёшь, чтобы жить полной жизнью.",
-        "поиск себя": "Себя не найти, себя можно только создать."
-    };
-    
-    // Ищем ответ в базе
-    const lowerQuery = query.toLowerCase();
-    const answer = wisdomDB[lowerQuery] 
-        ? wisdomDB[lowerQuery]
-        : `Ищу ответ на вопрос: "${query}". Пока его нет в моей базе, но скоро появится.`;
-    
-    // Успешный ответ
-    return res.status(200).json({
-        success: true,
-        query: query,
-        answer: answer,
-        collective: {
-            totalInsights: Object.keys(wisdomDB).length,
-            similarQuestions: Object.keys(wisdomDB).filter(key => 
-                key.includes(lowerQuery) || lowerQuery.includes(key)
-            )
-        },
-        timestamp: new Date().toISOString()
-    });
+  } catch(e) {
+    console.log('Ошибка парсинга:', e.message);
+  }
+  
+  // 1. Анализируем эмоциональный профиль запроса
+  const queryEmotions = analyzeEmotionalProfile(query);
+  console.log('Эмоции запроса:', queryEmotions);
+  
+  // 2. Ищем резонансные ответы
+  const matches = findResonantMatches(query, queryEmotions);
+  
+  // 3. Формируем ответ
+  return res.status(200).json({
+    success: true,
+    query: query,
+    emotional_profile: queryEmotions,
+    matches: matches,
+    resonance_level: matches.length > 0 ? 'high' : 'low',
+    invitation: matches.length > 0 
+      ? 'Эти ответы резонируют с вашим запросом'
+      : 'Этот вопрос создаёт новое пространство для мудрости',
+    timestamp: new Date().toISOString()
+  });
 }
-// ============= КОНЕЦ ФАЙЛА =============
+
+// Функция поиска резонансных совпадений
+function findResonantMatches(query, queryEmotions) {
+  const results = [];
+  
+  for (const [key, data] of Object.entries(wisdomDB)) {
+    // Проверяем текстовое совпадение
+    const textMatch = key.toLowerCase().includes(query.toLowerCase()) || 
+                     query.toLowerCase().includes(key.toLowerCase());
+    
+    // Проверяем эмоциональное совпадение
+    const wisdomTags = data.tags || [];
+    const emotionalMatch = wisdomTags.some(tag => 
+      Object.keys(queryEmotions).includes(tag)
+    );
+    
+    // Если есть хотя бы одно совпадение
+    if (textMatch || emotionalMatch) {
+      results.push({
+        id: key,
+        text: data.text,
+        tags: wisdomTags,
+        match_type: textMatch ? 'text' : 'emotional',
+        heat: data.heat || 0.5,
+        source: data.source || 'unknown'
+      });
+    }
+  }
+  
+  // Сортируем по "температуре" (heat)
+  return results.sort((a, b) => b.heat - a.heat);
+}
