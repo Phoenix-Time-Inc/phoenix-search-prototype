@@ -1,14 +1,7 @@
-{
-  "functions": {
-    "api/search.js": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    }
-  ]
-}
+api/search.js
+public/index.html
+public/phoenix.js
+public/style.css
+public/app.js
+vercel.json
+package.json
