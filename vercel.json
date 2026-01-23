@@ -1,7 +1,22 @@
 {
   "version": 2,
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_APP_ENV": "production",
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  },
+  "builds": [
+    { "src": "package.json", "use": "@vercel/nextjs" }
+  ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ]
+    { "src": "/(.*)", "dest": "/$1" },
+    { "src": "/static/(.*)", "dest": "/static/$1" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "status": 404, "dest": "/404.html" }
+  ],
+  "env": {
+    "NODE_VERSION": "18"
+  }
 }
