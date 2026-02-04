@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Phoenix Universe",
+    "slug": "phoenix-universe",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "platforms": ["ios", "android"], // УБИРАЕМ "web" отсюда!
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

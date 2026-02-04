@@ -1,0 +1,61 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: #000;
+  color: white;
+}
+
+/* Анимация пульсации */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Градиенты */
+.gradient-purple-pink {
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+}
+
+.gradient-blue-cyan {
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+}
+
+.gradient-green-emerald {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+/* Глобальные стили */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.card {
+  background: rgba(30, 30, 30, 0.5);
+  border: 1px solid rgba(100, 100, 100, 0.2);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
