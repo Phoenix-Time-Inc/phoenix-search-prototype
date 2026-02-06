@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Phoenix Search</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0a0a14, #1a1a2e);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        h1 {
+            background: linear-gradient(45deg, #ff4400, #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        .search-box {
+            margin: 40px 0;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #ff4400;
+            border-radius: 50px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            font-size: 1.2rem;
+            outline: none;
+        }
+        input[type="text"]:focus {
+            box-shadow: 0 0 20px rgba(255, 68, 0, 0.5);
+        }
+        .search-btn {
+            background: linear-gradient(45deg, #ff4400, #ffaa00);
+            color: black;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .search-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 68, 0, 0.5);
+        }
+        .project-links {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .project-card {
+            background: rgba(30, 30, 60, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 68, 0, 0.3);
+            transition: 0.3s;
+            text-decoration: none;
+            color: white;
+        }
+        .project-card:hover {
+            border-color: #ff4400;
+            transform: translateY(-5px);
+        }
+        .project-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        footer {
+            margin-top: 50px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🐦‍🔥</div>
+        <h1>PHOENIX SEARCH</h1>
+        <p>Поиск в синхронизированной реальности</p>
+        
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Введите запрос для синхронизации...">
+            <button class="search-btn" onclick="performSearch()">
+                🔍 Искать в реальности
+            </button>
+        </div>
+        
+        <div class="project-links">
+            <a href="https://phoenix-time-inc.github.io/Phoenix-web/" class="project-card" target="_blank">
+                <div class="project-icon">🌐</div>
+                <h3>PHOENIX WEB</h3>
+                <p>Веб-портал системы</p>
+            </a>
+            
+            <a href="https://github.com/Phoenix-Time-Inc/phoenix-space" class="project-card" target="_blank">
+                <div class="project-icon">⚙️</div>
+                <h3>FARM PORTAL</h3>
+                <p>Управление фермой</p>
+            </a>
+            
+            <a href="#" class="project-card" onclick="alert('Мобильное приложение в разработке')">
+                <div class="project-icon">📱</div>
+                <h3>MOBILE APP</h3>
+                <p>Для iOS & Android</p>
+            </a>
+        </div>
+        
+        <footer>
+            <p>🐦‍🔥 Phoenix Search Prototype v1.0 | Феникс-системы синхронизированы</p>
+            <p>Для активации полного поиска требуется подключение к ферме</p>
+        </footer>
+    </div>
+    
+    <script>
+        function performSearch() {
+            const query = document.getElementById('search-input').value;
+            if (!query) return;
+            
+            // Имитация поиска
+            alert(`🔍 Поиск: "${query}"\n\nСинхронизация с фермой...\nПоиск в базе мудрости...\nРезультаты скоро появятся.`);
+            
+            // Логирование
+            console.log(`[Phoenix Search] Запрос: ${query}`);
+            console.log(`[Phoenix Search] Синхронизация с фермой 192.168.0.102...`);
+            
+            // Анимация
+            document.body.style.animation = 'none';
+            document.body.offsetHeight;
+            document.body.style.animation = 'searchPulse 1s';
+            
+            // Добавляем стиль для анимации
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes searchPulse {
+                    0% { background: linear-gradient(135deg, #0a0a14, #1a1a2e); }
+                    50% { background: linear-gradient(135deg, #1a0a0a, #2e1a1a); }
+                    100% { background: linear-gradient(135deg, #0a0a14, #1a1a2e); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Поиск по Enter
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performSearch();
+        });
+        
+        // Приветствие
+        console.log('[Phoenix Search] 🔍 Поисковый прототип загружен');
+        console.log('[Phoenix Search] 🌐 Доступ к порталу: https://phoenix-time-inc.github.io/Phoenix-web/');
+        console.log('[Phoenix Search] ⚙️ Ферма: 192.168.0.102 (HiveOS)');
+    </script>
+</body>
+</html>
