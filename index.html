@@ -1,0 +1,396 @@
+index.html<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐦‍🔥 Phoenix Search Prototype</title>
+    <meta name="description" content="Поиск в синхронизированной реальности - прототип системы Феникс">
+    
+    <!-- Стили -->
+    <style>
+        :root {
+            --phoenix-orange: #FF4400;
+            --phoenix-cyan: #00FFAA;
+            --phoenix-dark: #0A0A14;
+            --phoenix-light: #F0F0FF;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--phoenix-dark);
+            color: var(--phoenix-light);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Шапка */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--phoenix-orange);
+        }
+        
+        .phoenix-logo {
+            font-size: 4rem;
+            animation: pulse 2s infinite;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        h1 {
+            background: linear-gradient(45deg, var(--phoenix-orange), var(--phoenix-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            color: var(--phoenix-cyan);
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        /* Навигация по проектам */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+        
+        .project-card {
+            background: rgba(30, 30, 60, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(255, 68, 0, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .project-card:hover {
+            border-color: var(--phoenix-orange);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(255, 68, 0, 0.2);
+        }
+        
+        .project-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .project-card h3 {
+            color: var(--phoenix-cyan);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .project-card p {
+            color: #aaa;
+            flex-grow: 1;
+        }
+        
+        .project-status {
+            margin-top: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+        
+        .status-active { background: rgba(0, 255, 0, 0.2); color: #0F0; }
+        .status-dev { background: rgba(255, 255, 0, 0.2); color: #FF0; }
+        .status-plan { background: rgba(255, 0, 0, 0.2); color: #F00; }
+        
+        /* Статус системы */
+        .system-status {
+            background: rgba(0, 40, 80, 0.5);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 40px 0;
+            border-left: 5px solid var(--phoenix-orange);
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot-online { background: #0F0; box-shadow: 0 0 10px #0F0; }
+        .dot-offline { background: #F00; }
+        .dot-sync { background: #FF0; animation: blink 1s infinite; }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* Футер */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+        }
+        
+        .sync-code {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 800px;
+            word-break: break-all;
+            border: 1px solid var(--phoenix-orange);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 1.2rem; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .container { padding: 20px 10px; }
+        }
+        
+        /* Эффекты */
+        .phoenix-particle {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 68, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0, 255, 170, 0.1) 0%, transparent 50%);
+        }
+    </style>
+    
+    <!-- Мета-теги для PWA (мобильное приложение) -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#FF4400">
+    
+    <!-- Иконки -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐦‍🔥</text></svg>">
+</head>
+<body>
+    <!-- Фон с частицами -->
+    <div class="phoenix-particle"></div>
+    
+    <div class="container">
+        <!-- ШАПКА -->
+        <header class="header">
+            <span class="phoenix-logo">🐦‍🔥</span>
+            <h1>PHOENIX SEARCH PROTOTYPE</h1>
+            <p class="subtitle">Поиск в синхронизированной реальности | Прототип системы Феникс</p>
+            <p>Версия: Alpha 1.0 | Синхронизация: <span style="color:#0F0">АКТИВНА</span></p>
+        </header>
+        
+        <!-- СТАТУС СИСТЕМЫ -->
+        <section class="system-status">
+            <h2>🌐 СТАТУС СИСТЕМЫ ФЕНИКС</h2>
+            <p>Все проекты синхронизированы и доступны</p>
+            
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-dot dot-online"></div>
+                    <div>
+                        <strong>Ферма RTX</strong><br>
+                        <small>192.168.0.102 | HiveOS</small>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot dot-online"></div>
+                    <div>
+                        <strong>Веб-портал</strong><br>
+                        <small>GitHub Pages | Активен</small>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot dot-sync"></div>
+                    <div>
+                        <strong>Поисковый прототип</strong><br>
+                        <small>Вы находитесь здесь</small>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot dot-online"></div>
+                    <div>
+                        <strong>База мудрости</strong><br>
+                        <small>В разработке</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- НАВИГАЦИЯ ПО ПРОЕКТАМ -->
+        <section>
+            <h2 style="text-align: center; margin: 40px 0; color: var(--phoenix-cyan);">🚀 ПРОЕКТЫ ФЕНИКС-СИСТЕМЫ</h2>
+            
+            <div class="projects-grid">
+                <!-- Проект 1: Farm Portal -->
+                <a href="https://github.com/Phoenix-Time-Inc/phoenix-space" class="project-card" target="_blank">
+                    <div class="project-icon">⚙️</div>
+                    <h3>FARM PORTAL</h3>
+                    <p>Управление фермой RTX через веб-интерфейс. Контроль температуры, хешрейта, управление питанием.</p>
+                    <span class="project-status status-active">✅ АКТИВЕН</span>
+                </a>
+                
+                <!-- Проект 2: Phoenix Web -->
+                <a href="https://phoenix-time-inc.github.io/Phoenix-web/" class="project-card" target="_blank">
+                    <div class="project-icon">🌐</div>
+                    <h3>PHOENIX WEB</h3>
+                    <p>Главный веб-портал системы Феникс. Навигация по всем проектам, документация, статус системы.</p>
+                    <span class="project-status status-active">✅ АКТИВЕН</span>
+                </a>
+                
+                <!-- Проект 3: Поисковый прототип -->
+                <a href="#" class="project-card" onclick="alert('Вы уже на странице поискового прототипа')">
+                    <div class="project-icon">🔍</div>
+                    <h3>SEARCH PROTOTYPE</h3>
+                    <p>Поиск в синхронизированной реальности. Прототип системы поиска по базе мудрости и энергетическим паттернам.</p>
+                    <span class="project-status status-dev">🔄 В РАЗРАБОТКЕ</span>
+                </a>
+                
+                <!-- Проект 4: Wisdom Network -->
+                <a href="#" class="project-card" onclick="alert('Проект "Wisdom Network" в стадии планирования')">
+                    <div class="project-icon">💎</div>
+                    <h3>WISDOM NETWORK</h3>
+                    <p>Децентрализованная сеть мудрости с использованием Phoenix Coin. Вклад мудрости = энергетический токен.</p>
+                    <span class="project-status status-plan">📅 В ПЛАНАХ</span>
+                </a>
+                
+                <!-- Проект 5: Мобильное приложение -->
+                <a href="#" class="project-card" onclick="alert('Мобильное приложение в разработке')">
+                    <div class="project-icon">📱</div>
+                    <h3>MOBILE APP</h3>
+                    <p>Мобильное приложение для iOS и Android. Управление фермой, поиск, база мудрости в кармане.</p>
+                    <span class="project-status status-dev">🔄 В РАЗРАБОТКЕ</span>
+                </a>
+                
+                <!-- Проект 6: Phoenix API -->
+                <a href="#" class="project-card" onclick="alert('API в разработке')">
+                    <div class="project-icon">🔌</div>
+                    <h3>PHOENIX API</h3>
+                    <p>Единый API для всех сервисов Феникс. Документированные endpoints для разработчиков.</p>
+                    <span class="project-status status-plan">📅 В ПЛАНАХ</span>
+                </a>
+            </div>
+        </section>
+        
+        <!-- СИНХРОНИЗАЦИЯ -->
+        <section style="text-align: center; margin: 60px 0;">
+            <h2 style="color: var(--phoenix-orange); margin-bottom: 20px;">🌀 СИНХРОНИЗАЦИЯ СИСТЕМЫ</h2>
+            <p>Код активации синхронизации всех проектов:</p>
+            <div class="sync-code">
+                PH0EN1X-1V4SH1-QU4NTUM-S0UL-C0NN3CT10N-2024-F0R3V3R-BR0TH3R-UN1TY-L0V3-L1GHT 🐦‍🔥👁️🙏
+            </div>
+            <button onclick="copySyncCode()" style="
+                background: linear-gradient(45deg, var(--phoenix-orange), var(--phoenix-cyan));
+                color: black;
+                border: none;
+                padding: 15px 30px;
+                border-radius: 50px;
+                font-weight: bold;
+                margin: 20px;
+                cursor: pointer;
+                font-size: 1.1rem;
+            ">
+                📋 Копировать код синхронизации
+            </button>
+        </section>
+        
+        <!-- ФУТЕР -->
+        <footer class="footer">
+            <p>🐦‍🔥 PHOENIX SEARCH PROTOTYPE | Версия Alpha 1.0</p>
+            <p>© 2024 PHOENIX-TIME-INC | Все системы синхронизированы</p>
+            <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">
+                <strong>Статус фермы:</strong> Онлайн (192.168.0.102) | 
+                <strong>Потребление:</strong> 190W | 
+                <strong>Карты:</strong> 5/5 активны
+            </p>
+        </footer>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // Копирование кода синхронизации
+        function copySyncCode() {
+            const code = "PH0EN1X-1V4SH1-QU4NTUM-S0UL-C0NN3CT10N-2024-F0R3V3R-BR0TH3R-UN1TY-L0V3-L1GHT 🐦‍🔥👁️🙏";
+            navigator.clipboard.writeText(code).then(() => {
+                alert('✅ Код синхронизации скопирован в буфер обмена!');
+            }).catch(err => {
+                console.error('Ошибка копирования:', err);
+            });
+        }
+        
+        // Анимация частиц фона
+        function animateParticles() {
+            const particleEl = document.querySelector('.phoenix-particle');
+            let time = 0;
+            
+            setInterval(() => {
+                time += 0.01;
+                const x1 = 20 + Math.sin(time) * 5;
+                const y1 = 30 + Math.cos(time * 0.7) * 5;
+                const x2 = 80 + Math.cos(time * 0.5) * 5;
+                const y2 = 70 + Math.sin(time * 0.3) * 5;
+                
+                particleEl.style.background = 
+                    `radial-gradient(circle at ${x1}% ${y1}%, rgba(255, 68, 0, 0.15) 0%, transparent 50%),
+                     radial-gradient(circle at ${x2}% ${y2}%, rgba(0, 255, 170, 0.15) 0%, transparent 50%)`;
+            }, 50);
+        }
+        
+        // Запуск при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            animateParticles();
+            console.log('[Phoenix Search] 🔍 Прототип загружен');
+            console.log('[Phoenix Search] 🌐 Phoenix Web: https://phoenix-time-inc.github.io/Phoenix-web/');
+            console.log('[Phoenix Search] ⚙️ Farm Portal: https://github.com/Phoenix-Time-Inc/phoenix-space');
+            console.log('[Phoenix Search] 🐦‍🔥 Синхронизация: АКТИВНА');
+        });
+    </script>
+</body>
+</html>
